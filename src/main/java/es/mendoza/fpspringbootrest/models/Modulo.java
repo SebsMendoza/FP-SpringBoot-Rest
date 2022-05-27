@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 
 
 import javax.persistence.*;
@@ -19,13 +20,10 @@ public class Modulo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private int año;
+    private int anio;
     private String nombre;
     @Column(unique = true)
     private String siglas;
-    @ManyToOne(cascade = {CascadeType.PERSIST})
-    @JoinColumn(name = "num_curso")
-    private Curso curso;
     private LocalDateTime createdAt;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "modulo", cascade = CascadeType.REMOVE)
     private Set<Calificacion> notas;

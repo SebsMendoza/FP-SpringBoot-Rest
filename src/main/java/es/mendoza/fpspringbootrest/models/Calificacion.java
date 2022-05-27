@@ -15,10 +15,8 @@ public class Calificacion {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private double nota;
-    @ManyToOne
-    @JoinColumn(name = "alumno_id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Alumno alumno;
-    @ManyToOne
-    @JoinColumn(name = "modulo_id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Modulo modulo;
 }
