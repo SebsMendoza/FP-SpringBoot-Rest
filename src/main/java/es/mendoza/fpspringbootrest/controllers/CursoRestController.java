@@ -1,5 +1,9 @@
 package es.mendoza.fpspringbootrest.controllers;
 
+import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
+import es.mendoza.fpspringbootrest.errors.cursos.CursoBadRequestException;
+import es.mendoza.fpspringbootrest.errors.cursos.CursoNotFoundException;
+import es.mendoza.fpspringbootrest.errors.cursos.CursosNotFoundException;
 import es.mendoza.fpspringbootrest.models.Curso;
 import es.mendoza.fpspringbootrest.repositories.CursoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +26,23 @@ public class CursoRestController {
     @GetMapping("/cursos")
     public ResponseEntity<List<Curso>> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Curso> cursos = null;
-        if (nombre.isPresent()) {
-            cursos = cursoRepository.findByNombreContainsIgnoreCase(nombre.get());
-        } else {
-            cursos = cursoRepository.findAll();
-        }
-        if (limit.isPresent() && !cursos.isEmpty() && cursos.size() > Integer.parseInt(limit.get())) {
-            try {
-                return ResponseEntity.ok(cursos.subList(0, Integer.parseInt(limit.get())));
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
-            }
-        } else {
-            if (!cursos.isEmpty()) {
-                return ResponseEntity.ok(cursos);
+        try {
+            if (nombre.isPresent()) {
+                cursos = cursoRepository.findByNombreContainsIgnoreCase(nombre.get());
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay cursos");
+                cursos = cursoRepository.findAll();
             }
+            if (limit.isPresent() && !cursos.isEmpty() && cursos.size() > Integer.parseInt(limit.get())) {
+                return ResponseEntity.ok(cursos.subList(0, Integer.parseInt(limit.get())));
+            } else {
+                if (!cursos.isEmpty()) {
+                    return ResponseEntity.ok(cursos);
+                } else {
+                    throw new CursosNotFoundException();
+                }
+            }
+        } catch (Exception e) {
+            throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
         }
     }
 
@@ -47,7 +51,7 @@ public class CursoRestController {
     public ResponseEntity<Curso> findById(@PathVariable Long id) {
         Curso curso = cursoRepository.findById(id).orElse(null);
         if (curso == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el curso con id: " + id);
+            throw new CursoNotFoundException(id);
         } else {
             return ResponseEntity.ok(curso);
         }
@@ -59,10 +63,16 @@ public class CursoRestController {
         try {
             curso.setCreatedAt(LocalDateTime.now());
             curso.setId(null);
+            if (curso.getNombre() == null || curso.getNombre().isEmpty()) {
+                throw new CursoBadRequestException("Nombre", "El nombre es obligatorio");
+            }
+            if (curso.getSiglas() == null || curso.getSiglas().isEmpty()) {
+                throw new CursoBadRequestException("Siglas", "Las siglas son obligatorias");
+            }
             Curso cursoInsertado = cursoRepository.save(curso);
             return ResponseEntity.ok(cursoInsertado);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Insertar", "Error al insertar el curso. Campos incorrectos");
         }
     }
 
@@ -72,14 +82,20 @@ public class CursoRestController {
         try {
             Curso cursoActualizado = cursoRepository.findById(id).orElse(null);
             if (cursoActualizado == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el curso con id: " + id);
+                throw new CursoNotFoundException(id);
             } else {
+                if (curso.getNombre() == null || curso.getNombre().isEmpty()) {
+                    throw new CursoBadRequestException("Nombre", "El nombre es obligatorio");
+                }
+                if (curso.getSiglas() == null || curso.getSiglas().isEmpty()) {
+                    throw new CursoBadRequestException("Siglas", "Las siglas son obligatorias");
+                }
                 cursoActualizado.setNombre(curso.getNombre());
                 cursoActualizado.setSiglas(curso.getSiglas());
                 return ResponseEntity.ok(cursoActualizado);
             }
         } catch (ResponseStatusException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Actualizar", "Error al actualizar el curso. Campos incorrectos");
         }
     }
 
@@ -89,13 +105,13 @@ public class CursoRestController {
         try {
             Curso curso = cursoRepository.findById(id).orElse(null);
             if (curso == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el curso con id: " + id);
+                throw new CursoNotFoundException(id);
             } else {
                 cursoRepository.delete(curso);
                 return ResponseEntity.ok(curso);
             }
         } catch (ResponseStatusException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Eliminar", "Error al borrar el curso");
         }
     }
 }
