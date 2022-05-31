@@ -1,5 +1,6 @@
 package es.mendoza.fpspringbootrest.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,6 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
 public class Modulo {
     @Id
@@ -25,6 +25,66 @@ public class Modulo {
     @Column(unique = true)
     private String siglas;
     private LocalDateTime createdAt;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "modulo", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "modulo", cascade = CascadeType.REMOVE)
     private Set<Calificacion> notas;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public int getAnio() {
+        return anio;
+    }
+
+    public void setAnio(int anio) {
+        this.anio = anio;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getSiglas() {
+        return siglas;
+    }
+
+    public void setSiglas(String siglas) {
+        this.siglas = siglas;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Set<Calificacion> getNotas() {
+        return notas;
+    }
+
+    public void setNotas(Set<Calificacion> notas) {
+        this.notas = notas;
+    }
+
+    @Override
+    public String toString() {
+        return "Modulo{" +
+                "id=" + id +
+                ", anio=" + anio +
+                ", nombre='" + nombre + '\'' +
+                ", siglas='" + siglas + '\'' +
+                ", createdAt=" + createdAt +
+                ", notas=" + notas +
+                '}';
+    }
 }
