@@ -18,7 +18,8 @@ public class Curso {
     private String nombre;
     @Column(unique = true)
     private String siglas;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_curso")
     private Set<Modulo> modulos;
     private LocalDateTime createdAt;
 }
