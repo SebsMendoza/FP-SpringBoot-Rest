@@ -6,8 +6,8 @@ import es.mendoza.fpspringbootrest.errors.cursos.CursoNotFoundException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursosNotFoundException;
 import es.mendoza.fpspringbootrest.models.Curso;
 import es.mendoza.fpspringbootrest.repositories.CursoRepository;
+import es.mendoza.fpspringbootrest.service.uploads.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,8 +19,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/curso")
 public class CursoRestController {
+    private final CursoRepository cursoRepository;
+
     @Autowired
-    CursoRepository cursoRepository;
+    public CursoRestController(CursoRepository cursoRepository) {
+        this.cursoRepository = cursoRepository;
+    }
+
+    @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los cursos
     @GetMapping("/cursos")
@@ -63,12 +69,7 @@ public class CursoRestController {
         try {
             curso.setCreatedAt(LocalDateTime.now());
             curso.setId(null);
-            if (curso.getNombre() == null || curso.getNombre().isEmpty()) {
-                throw new CursoBadRequestException("Nombre", "El nombre es obligatorio");
-            }
-            if (curso.getSiglas() == null || curso.getSiglas().isEmpty()) {
-                throw new CursoBadRequestException("Siglas", "Las siglas son obligatorias");
-            }
+            checkCursoData(curso);
             Curso cursoInsertado = cursoRepository.save(curso);
             return ResponseEntity.ok(cursoInsertado);
         } catch (Exception e) {
@@ -84,12 +85,7 @@ public class CursoRestController {
             if (cursoActualizado == null) {
                 throw new CursoNotFoundException(id);
             } else {
-                if (curso.getNombre() == null || curso.getNombre().isEmpty()) {
-                    throw new CursoBadRequestException("Nombre", "El nombre es obligatorio");
-                }
-                if (curso.getSiglas() == null || curso.getSiglas().isEmpty()) {
-                    throw new CursoBadRequestException("Siglas", "Las siglas son obligatorias");
-                }
+                checkCursoData(curso);
                 cursoActualizado.setNombre(curso.getNombre());
                 cursoActualizado.setSiglas(curso.getSiglas());
                 return ResponseEntity.ok(cursoActualizado);
@@ -112,6 +108,15 @@ public class CursoRestController {
             }
         } catch (ResponseStatusException e) {
             throw new GeneralBadRequestException("Eliminar", "Error al borrar el curso");
+        }
+    }
+
+    private void checkCursoData(Curso curso) {
+        if (curso.getNombre() == null || curso.getNombre().isEmpty()) {
+            throw new CursoBadRequestException("Nombre", "El nombre es obligatorio");
+        }
+        if (curso.getSiglas() == null || curso.getSiglas().isEmpty()) {
+            throw new CursoBadRequestException("Siglas", "Las siglas son obligatorias");
         }
     }
 }

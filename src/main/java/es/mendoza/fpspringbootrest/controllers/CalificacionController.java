@@ -8,6 +8,7 @@ import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionNotFoundExc
 import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionesNotFoundException;
 import es.mendoza.fpspringbootrest.models.Calificacion;
 import es.mendoza.fpspringbootrest.repositories.CalificacionRepository;
+import es.mendoza.fpspringbootrest.service.uploads.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/calificacion")
 public class CalificacionController {
-    @Autowired
-    CalificacionRepository calificacionRepository;
+    private final CalificacionRepository calificacionRepository;
+
+    public CalificacionController(CalificacionRepository calificacionRepository) {
+        this.calificacionRepository = calificacionRepository;
+    }
+
+    @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtener todas las notas
     @GetMapping("/notas")
@@ -49,6 +55,7 @@ public class CalificacionController {
     public ResponseEntity<Calificacion> save(@RequestBody Calificacion calificacion) {
         try {
             calificacion.setId(null);
+            checkCalificacionData(calificacion);
             Calificacion notaInsertada = calificacionRepository.save(calificacion);
             return ResponseEntity.ok(notaInsertada);
         } catch (Exception e) {
@@ -64,6 +71,7 @@ public class CalificacionController {
             if (notaActualizada == null) {
                 throw new CalificacionNotFoundException(id);
             } else {
+                checkCalificacionData(calificacion);
                 notaActualizada.setNota(calificacion.getNota());
                 notaActualizada = calificacionRepository.save(notaActualizada);
                 return ResponseEntity.ok(notaActualizada);
@@ -86,6 +94,12 @@ public class CalificacionController {
             }
         } catch (Exception e) {
             throw new GeneralBadRequestException("Eliminar", "Error al borrar la calificación");
+        }
+    }
+
+    private void checkCalificacionData(Calificacion calificacion) {
+        if (calificacion.getNota() < 0) {
+            throw new CalificacionBadRequestException("Nota", "La nota debe ser mayor que 0");
         }
     }
 }

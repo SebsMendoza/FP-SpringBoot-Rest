@@ -6,10 +6,12 @@ import es.mendoza.fpspringbootrest.errors.alumnos.AlumnoNotFoundException;
 import es.mendoza.fpspringbootrest.errors.alumnos.AlumnosNotFoundException;
 import es.mendoza.fpspringbootrest.models.Alumno;
 import es.mendoza.fpspringbootrest.repositories.AlumnoRepository;
+import es.mendoza.fpspringbootrest.service.uploads.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -19,8 +21,16 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/alumno")
 public class AlumnoRestController {
+    private final AlumnoRepository alumnoRepository;
+    private final StorageService storageService;
+
     @Autowired
-    AlumnoRepository alumnoRepository;
+    public AlumnoRestController(AlumnoRepository alumnoRepository, StorageService storageService) {
+        this.alumnoRepository = alumnoRepository;
+        this.storageService = storageService;
+    }
+
+    @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los alumnos
     @GetMapping("/alumnos")
@@ -112,6 +122,34 @@ public class AlumnoRestController {
             }
         } catch (ResponseStatusException e) {
             throw new GeneralBadRequestException("Eliminar", "Error al borrar el alumno");
+        }
+    }
+
+    private void checkAlumnoData(Alumno alumno) {
+        if (alumno.getNombre() == null || alumno.getNombre().isEmpty()) {
+            throw new AlumnoBadRequestException("Nombre", "El nombre es obligatorio");
+        }
+        if (alumno.getCorreo() == null || alumno.getCorreo().isEmpty()) {
+            throw new AlumnoBadRequestException("Correo", "El correo es obligatorio");
+        }
+    }
+
+    @PostMapping(value = "/alumnos/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> nuevoAlumno(@RequestPart("alumno") Alumno alumno, @RequestPart("file") MultipartFile file) {
+        String urlImagen = null;
+        try {
+            alumno.setCreatedAt(LocalDateTime.now());
+            alumno.setId(null);
+            checkAlumnoData(alumno);
+            if (!file.isEmpty()) {
+                String imagen = storageService.store(file);
+                urlImagen = storageService.getUrl(imagen);
+                alumno.setImagen(urlImagen);
+            }
+            Alumno alumnoInsertado = alumnoRepository.save(alumno);
+            return ResponseEntity.ok(alumnoInsertado);
+        } catch (AlumnoNotFoundException e) {
+            throw new GeneralBadRequestException("Insertar", "Error al insertar el alumno. Campos incorrectos");
         }
     }
 }

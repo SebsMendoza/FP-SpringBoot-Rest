@@ -6,6 +6,7 @@ import es.mendoza.fpspringbootrest.errors.modulos.ModuloNotFoundException;
 import es.mendoza.fpspringbootrest.errors.modulos.ModulosNotFoundException;
 import es.mendoza.fpspringbootrest.models.Modulo;
 import es.mendoza.fpspringbootrest.repositories.ModuloRepository;
+import es.mendoza.fpspringbootrest.service.uploads.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,13 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/modulo")
 public class ModuloRestController {
+    private final ModuloRepository moduloRepository;
 
-    @Autowired
-    ModuloRepository moduloRepository;
+    public ModuloRestController(ModuloRepository moduloRepository) {
+        this.moduloRepository = moduloRepository;
+    }
+
+    @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los módulos
     @GetMapping("/modulos")
@@ -64,12 +69,7 @@ public class ModuloRestController {
         try {
             modulo.setCreatedAt(LocalDateTime.now());
             modulo.setId(null);
-            if (modulo.getNombre() == null || modulo.getNombre().isEmpty()) {
-                throw new ModuloBadRequestException("Nombre", "El nombre es obligatorio");
-            }
-            if (modulo.getSiglas() == null || modulo.getSiglas().isEmpty()) {
-                throw new ModuloBadRequestException("Siglas", "La siglas son obligatorias");
-            }
+            checkModuloData(modulo);
             Modulo moduloInsertado = moduloRepository.save(modulo);
             return ResponseEntity.ok(moduloInsertado);
         } catch (Exception e) {
@@ -85,12 +85,7 @@ public class ModuloRestController {
             if (moduloActualizado == null) {
                 throw new ModuloNotFoundException(id);
             } else {
-                if (modulo.getNombre() == null || modulo.getNombre().isEmpty()) {
-                    throw new ModuloBadRequestException("Nombre", "El nombre es obligatorio");
-                }
-                if (modulo.getSiglas() == null || modulo.getSiglas().isEmpty()) {
-                    throw new ModuloBadRequestException("Siglas", "las siglas son obligatorias");
-                }
+                checkModuloData(modulo);
                 moduloActualizado.setNombre(modulo.getNombre());
                 moduloActualizado.setSiglas(modulo.getSiglas());
                 return ResponseEntity.ok(moduloActualizado);
@@ -113,6 +108,15 @@ public class ModuloRestController {
             }
         } catch (ResponseStatusException e) {
             throw new GeneralBadRequestException("Eliminar", "Error al borrar el curso");
+        }
+    }
+
+    private void checkModuloData(Modulo modulo) {
+        if (modulo.getNombre() == null || modulo.getNombre().isEmpty()) {
+            throw new ModuloBadRequestException("Nombre", "El nombre es obligatorio");
+        }
+        if (modulo.getSiglas() == null || modulo.getSiglas().isEmpty()) {
+            throw new ModuloBadRequestException("Siglas", "Las siglas son obligatorias");
         }
     }
 }
