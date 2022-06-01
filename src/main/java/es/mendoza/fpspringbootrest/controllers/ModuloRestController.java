@@ -1,5 +1,9 @@
 package es.mendoza.fpspringbootrest.controllers;
 
+import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
+import es.mendoza.fpspringbootrest.errors.modulos.ModuloBadRequestException;
+import es.mendoza.fpspringbootrest.errors.modulos.ModuloNotFoundException;
+import es.mendoza.fpspringbootrest.errors.modulos.ModulosNotFoundException;
 import es.mendoza.fpspringbootrest.models.Modulo;
 import es.mendoza.fpspringbootrest.repositories.ModuloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +27,23 @@ public class ModuloRestController {
     @GetMapping("/modulos")
     public ResponseEntity<List<Modulo>> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Modulo> modulos = null;
-        if (nombre.isPresent()) {
-            modulos = moduloRepository.findByNombreContainsIgnoreCase(nombre.get());
-        } else {
-            modulos = moduloRepository.findAll();
-        }
-        if (limit.isPresent() && !modulos.isEmpty() && modulos.size() > Integer.parseInt(limit.get())) {
-            try {
-                return ResponseEntity.ok(modulos.subList(0, Integer.parseInt(limit.get())));
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
-            }
-        } else {
-            if (!modulos.isEmpty()) {
-                return ResponseEntity.ok(modulos);
+        try {
+            if (nombre.isPresent()) {
+                modulos = moduloRepository.findByNombreContainsIgnoreCase(nombre.get());
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay modulos");
+                modulos = moduloRepository.findAll();
             }
+            if (limit.isPresent() && !modulos.isEmpty() && modulos.size() > Integer.parseInt(limit.get())) {
+                return ResponseEntity.ok(modulos.subList(0, Integer.parseInt(limit.get())));
+            } else {
+                if (!modulos.isEmpty()) {
+                    return ResponseEntity.ok(modulos);
+                } else {
+                    throw new ModulosNotFoundException();
+                }
+            }
+        } catch (Exception e) {
+            throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
         }
     }
 
@@ -48,7 +52,7 @@ public class ModuloRestController {
     public ResponseEntity<Modulo> findById(@PathVariable Long id) {
         Modulo modulo = moduloRepository.findById(id).orElse(null);
         if (modulo == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el modulo con id: " + id);
+            throw new ModuloNotFoundException(id);
         } else {
             return ResponseEntity.ok(modulo);
         }
@@ -60,10 +64,16 @@ public class ModuloRestController {
         try {
             modulo.setCreatedAt(LocalDateTime.now());
             modulo.setId(null);
+            if (modulo.getNombre() == null || modulo.getNombre().isEmpty()) {
+                throw new ModuloBadRequestException("Nombre", "El nombre es obligatorio");
+            }
+            if (modulo.getSiglas() == null || modulo.getSiglas().isEmpty()) {
+                throw new ModuloBadRequestException("Siglas", "La siglas son obligatorias");
+            }
             Modulo moduloInsertado = moduloRepository.save(modulo);
             return ResponseEntity.ok(moduloInsertado);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Insertar", "Error al insertar el módulo. Campos incorrectos");
         }
     }
 
@@ -73,14 +83,20 @@ public class ModuloRestController {
         try {
             Modulo moduloActualizado = moduloRepository.findById(id).orElse(null);
             if (moduloActualizado == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el modulo con id: " + id);
+                throw new ModuloNotFoundException(id);
             } else {
+                if (modulo.getNombre() == null || modulo.getNombre().isEmpty()) {
+                    throw new ModuloBadRequestException("Nombre", "El nombre es obligatorio");
+                }
+                if (modulo.getSiglas() == null || modulo.getSiglas().isEmpty()) {
+                    throw new ModuloBadRequestException("Siglas", "las siglas son obligatorias");
+                }
                 moduloActualizado.setNombre(modulo.getNombre());
                 moduloActualizado.setSiglas(modulo.getSiglas());
                 return ResponseEntity.ok(moduloActualizado);
             }
         } catch (ResponseStatusException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Actualizar", "Error al actualizar el módulo. Campos incorrectos");
         }
     }
 
@@ -90,13 +106,13 @@ public class ModuloRestController {
         try {
             Modulo modulo = moduloRepository.findById(id).orElse(null);
             if (modulo == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el modulo con id: " + id);
+                throw new ModuloNotFoundException(id);
             } else {
                 moduloRepository.delete(modulo);
                 return ResponseEntity.ok(modulo);
             }
         } catch (ResponseStatusException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Eliminar", "Error al borrar el curso");
         }
     }
 }

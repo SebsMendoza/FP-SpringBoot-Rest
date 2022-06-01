@@ -1,5 +1,11 @@
 package es.mendoza.fpspringbootrest.controllers;
 
+import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
+import es.mendoza.fpspringbootrest.errors.alumnos.AlumnoBadRequestException;
+import es.mendoza.fpspringbootrest.errors.alumnos.AlumnoNotFoundException;
+import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionBadRequestException;
+import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionNotFoundException;
+import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionesNotFoundException;
 import es.mendoza.fpspringbootrest.models.Calificacion;
 import es.mendoza.fpspringbootrest.repositories.CalificacionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +27,7 @@ public class CalificacionController {
     public ResponseEntity<List<Calificacion>> findAll() {
         List<Calificacion> notas = calificacionRepository.findAll();
         if (notas.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No hay notas registradas");
+            throw new CalificacionesNotFoundException();
         } else {
             return ResponseEntity.ok(notas);
         }
@@ -32,7 +38,7 @@ public class CalificacionController {
     public ResponseEntity<Calificacion> findById(@PathVariable Long id) {
         Calificacion nota = calificacionRepository.findById(id).orElse(null);
         if (nota == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la nota con id: " + id);
+            throw new CalificacionNotFoundException(id);
         } else {
             return ResponseEntity.ok(nota);
         }
@@ -46,7 +52,7 @@ public class CalificacionController {
             Calificacion notaInsertada = calificacionRepository.save(calificacion);
             return ResponseEntity.ok(notaInsertada);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Insertar", "Error al insertar la calificación");
         }
     }
 
@@ -56,14 +62,14 @@ public class CalificacionController {
         try {
             Calificacion notaActualizada = calificacionRepository.findById(id).orElse(null);
             if (notaActualizada == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe la nota con id: " + id);
+                throw new CalificacionNotFoundException(id);
             } else {
                 notaActualizada.setNota(calificacion.getNota());
                 notaActualizada = calificacionRepository.save(notaActualizada);
                 return ResponseEntity.ok(notaActualizada);
             }
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Actualizar", "Error al actualizar la calificación. Campos incorrectos");
         }
     }
 
@@ -73,13 +79,13 @@ public class CalificacionController {
         try {
             Calificacion nota = calificacionRepository.findById(id).orElse(null);
             if (nota == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el calificacion con id: " + id);
+                throw new CalificacionNotFoundException(id);
             } else {
                 calificacionRepository.delete(nota);
                 return ResponseEntity.ok(nota);
             }
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: " + e.getMessage());
+            throw new GeneralBadRequestException("Eliminar", "Error al borrar la calificación");
         }
     }
 }
