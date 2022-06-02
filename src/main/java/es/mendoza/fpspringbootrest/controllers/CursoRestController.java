@@ -4,9 +4,9 @@ import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursoBadRequestException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursoNotFoundException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursosNotFoundException;
+import es.mendoza.fpspringbootrest.mapper.CursoMapper;
 import es.mendoza.fpspringbootrest.models.Curso;
 import es.mendoza.fpspringbootrest.repositories.CursoRepository;
-import es.mendoza.fpspringbootrest.service.uploads.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +21,12 @@ import java.util.Optional;
 public class CursoRestController {
     private final CursoRepository cursoRepository;
 
+    private final CursoMapper cursoMapper;
+
     @Autowired
-    public CursoRestController(CursoRepository cursoRepository) {
+    public CursoRestController(CursoRepository cursoRepository, CursoMapper cursoMapper) {
         this.cursoRepository = cursoRepository;
+        this.cursoMapper = cursoMapper;
     }
 
     @CrossOrigin(origins = "http://localhost:7575")

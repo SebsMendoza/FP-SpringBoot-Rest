@@ -36,3 +36,5 @@ INSERT INTO alumno (id, nombre, correo, created_at)
 VALUES (NEXTVAL('hibernate_sequence'), 'Sandra', 'san@prueba.com', NOW());
 INSERT INTO alumno (id, nombre, correo, created_at)
 VALUES (NEXTVAL('hibernate_sequence'), 'Alfredo', 'alf@prueba', NOW());
+INSERT INTO calificacion (id, nota, id_alumno, id_modulo)
+VALUES (NEXTVAL('hibernate_sequence'), 5, 16, 3);

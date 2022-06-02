@@ -1,10 +1,10 @@
 package es.mendoza.fpspringbootrest.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.*;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -24,7 +24,7 @@ public class Modulo {
     private String nombre;
     @Column(unique = true)
     private String siglas;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "modulo", cascade = CascadeType.REMOVE)
     private Set<Calificacion> notas;
 
@@ -68,6 +68,7 @@ public class Modulo {
         this.createdAt = createdAt;
     }
 
+    @JsonManagedReference
     public Set<Calificacion> getNotas() {
         return notas;
     }

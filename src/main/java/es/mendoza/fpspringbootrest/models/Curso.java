@@ -20,7 +20,7 @@ public class Curso {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_curso")
     private Set<Modulo> modulos;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() {
         return id;

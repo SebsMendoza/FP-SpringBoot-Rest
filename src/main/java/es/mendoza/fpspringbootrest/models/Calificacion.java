@@ -1,12 +1,13 @@
 package es.mendoza.fpspringbootrest.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @NoArgsConstructor
@@ -17,11 +18,11 @@ public class Calificacion {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private double nota;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_alumno")
+    @ManyToOne
+    @JoinColumn(name = "id_alumno", referencedColumnName = "id", nullable = false)
     private Alumno alumno;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_modulo")
+    @JoinColumn(name = "id_modulo", referencedColumnName = "id", nullable = false)
     private Modulo modulo;
 
     public Long getId() {
@@ -40,6 +41,7 @@ public class Calificacion {
         this.nota = nota;
     }
 
+    @JsonBackReference
     public Alumno getAlumno() {
         return alumno;
     }
@@ -48,6 +50,7 @@ public class Calificacion {
         this.alumno = alumno;
     }
 
+    @JsonBackReference
     public Modulo getModulo() {
         return modulo;
     }
