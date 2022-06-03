@@ -1,4 +1,4 @@
-package es.mendoza.fpspringbootrest.dto;
+package es.mendoza.fpspringbootrest.dto.alumnos;
 
 import lombok.Getter;
 import lombok.Setter;

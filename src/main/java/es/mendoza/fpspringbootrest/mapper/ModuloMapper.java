@@ -1,7 +1,8 @@
 package es.mendoza.fpspringbootrest.mapper;
 
-import es.mendoza.fpspringbootrest.dto.CreateModuloDTO;
-import es.mendoza.fpspringbootrest.dto.ModuloDTO;
+import es.mendoza.fpspringbootrest.dto.modulos.CreateModuloDTO;
+import es.mendoza.fpspringbootrest.dto.modulos.ListModulosDTO;
+import es.mendoza.fpspringbootrest.dto.modulos.ModuloDTO;
 import es.mendoza.fpspringbootrest.models.Modulo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,5 +30,11 @@ public class ModuloMapper {
 
     public Modulo fromDTO(CreateModuloDTO moduloDTO) {
         return modelMapper.map(moduloDTO, Modulo.class);
+    }
+
+    public ListModulosDTO toListDTO(List<Modulo> modulos) {
+        ListModulosDTO listModulosDTO = new ListModulosDTO();
+        listModulosDTO.setData(modulos.stream().map(this::toDTO).collect(Collectors.toList()));
+        return listModulosDTO;
     }
 }

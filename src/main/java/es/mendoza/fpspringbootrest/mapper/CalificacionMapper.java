@@ -1,7 +1,8 @@
 package es.mendoza.fpspringbootrest.mapper;
 
-import es.mendoza.fpspringbootrest.dto.CalificacionDTO;
-import es.mendoza.fpspringbootrest.dto.CreateCalificacionDTO;
+import es.mendoza.fpspringbootrest.dto.calificaciones.CalificacionDTO;
+import es.mendoza.fpspringbootrest.dto.calificaciones.CreateCalificacionDTO;
+import es.mendoza.fpspringbootrest.dto.calificaciones.ListCalificacionesDTO;
 import es.mendoza.fpspringbootrest.models.Calificacion;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,5 +30,11 @@ public class CalificacionMapper {
 
     public Calificacion fromDTO(CreateCalificacionDTO calificacionDTO) {
         return modelMapper.map(calificacionDTO, Calificacion.class);
+    }
+
+    public ListCalificacionesDTO toListDTO(List<Calificacion> notas) {
+        ListCalificacionesDTO listCalificacionesDTO = new ListCalificacionesDTO();
+        listCalificacionesDTO.setData(notas.stream().map(this::toDTO).collect(Collectors.toList()));
+        return listCalificacionesDTO;
     }
 }

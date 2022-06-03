@@ -1,7 +1,8 @@
 package es.mendoza.fpspringbootrest.mapper;
 
-import es.mendoza.fpspringbootrest.dto.CreateCursoDTO;
-import es.mendoza.fpspringbootrest.dto.CursoDTO;
+import es.mendoza.fpspringbootrest.dto.cursos.CreateCursoDTO;
+import es.mendoza.fpspringbootrest.dto.cursos.CursoDTO;
+import es.mendoza.fpspringbootrest.dto.cursos.ListCursosDTO;
 import es.mendoza.fpspringbootrest.models.Curso;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,5 +30,11 @@ public class CursoMapper {
 
     public Curso fromDTO(CreateCursoDTO cursoDTO) {
         return modelMapper.map(cursoDTO, Curso.class);
+    }
+
+    public ListCursosDTO toListDTO(List<Curso> cursos) {
+        ListCursosDTO listCursosDTO = new ListCursosDTO();
+        listCursosDTO.setData(cursos.stream().map(this::toDTO).collect(Collectors.toList()));
+        return listCursosDTO;
     }
 }

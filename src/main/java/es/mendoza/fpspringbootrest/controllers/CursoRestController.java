@@ -1,5 +1,6 @@
 package es.mendoza.fpspringbootrest.controllers;
 
+import es.mendoza.fpspringbootrest.dto.cursos.CreateCursoDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursoBadRequestException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursoNotFoundException;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +20,6 @@ import java.util.Optional;
 @RequestMapping("/curso")
 public class CursoRestController {
     private final CursoRepository cursoRepository;
-
     private final CursoMapper cursoMapper;
 
     @Autowired
@@ -33,7 +32,8 @@ public class CursoRestController {
 
     //Obtenemos todos los cursos
     @GetMapping("/cursos")
-    public ResponseEntity<List<Curso>> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
+    public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit,
+                                     @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Curso> cursos = null;
         try {
             if (nombre.isPresent()) {
@@ -42,10 +42,10 @@ public class CursoRestController {
                 cursos = cursoRepository.findAll();
             }
             if (limit.isPresent() && !cursos.isEmpty() && cursos.size() > Integer.parseInt(limit.get())) {
-                return ResponseEntity.ok(cursos.subList(0, Integer.parseInt(limit.get())));
+                return ResponseEntity.ok(cursoMapper.toDTO(cursos.subList(0, Integer.parseInt(limit.get()))));
             } else {
                 if (!cursos.isEmpty()) {
-                    return ResponseEntity.ok(cursos);
+                    return ResponseEntity.ok(cursoMapper.toDTO(cursos));
                 } else {
                     throw new CursosNotFoundException();
                 }
@@ -57,24 +57,23 @@ public class CursoRestController {
 
     //Obtenemos un curso por ID
     @GetMapping("/cursos/{id}")
-    public ResponseEntity<Curso> findById(@PathVariable Long id) {
+    public ResponseEntity<?> findById(@PathVariable Long id) {
         Curso curso = cursoRepository.findById(id).orElse(null);
         if (curso == null) {
             throw new CursoNotFoundException(id);
         } else {
-            return ResponseEntity.ok(curso);
+            return ResponseEntity.ok(cursoMapper.toDTO(curso));
         }
     }
 
     //Insertar curso
     @PostMapping("/cursos")
-    public ResponseEntity<Curso> save(@RequestBody Curso curso) {
+    public ResponseEntity<?> save(@RequestBody CreateCursoDTO cursoDTO) {
         try {
-            curso.setCreatedAt(LocalDateTime.now());
-            curso.setId(null);
+            Curso curso = cursoMapper.fromDTO(cursoDTO);
             checkCursoData(curso);
             Curso cursoInsertado = cursoRepository.save(curso);
-            return ResponseEntity.ok(cursoInsertado);
+            return ResponseEntity.ok(cursoMapper.toDTO(cursoInsertado));
         } catch (Exception e) {
             throw new GeneralBadRequestException("Insertar", "Error al insertar el curso. Campos incorrectos");
         }
@@ -82,7 +81,7 @@ public class CursoRestController {
 
     //Actualizar curso por id
     @PutMapping("/cursos/{id}")
-    public ResponseEntity<Curso> update(@PathVariable Long id, @RequestBody Curso curso) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Curso curso) {
         try {
             Curso cursoActualizado = cursoRepository.findById(id).orElse(null);
             if (cursoActualizado == null) {
@@ -91,7 +90,8 @@ public class CursoRestController {
                 checkCursoData(curso);
                 cursoActualizado.setNombre(curso.getNombre());
                 cursoActualizado.setSiglas(curso.getSiglas());
-                return ResponseEntity.ok(cursoActualizado);
+                cursoActualizado = cursoRepository.save(cursoActualizado);
+                return ResponseEntity.ok(cursoMapper.toDTO(cursoActualizado));
             }
         } catch (ResponseStatusException e) {
             throw new GeneralBadRequestException("Actualizar", "Error al actualizar el curso. Campos incorrectos");
@@ -100,14 +100,14 @@ public class CursoRestController {
 
     //Borrar un curso
     @DeleteMapping("/cursos/{id}")
-    public ResponseEntity<Curso> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             Curso curso = cursoRepository.findById(id).orElse(null);
             if (curso == null) {
                 throw new CursoNotFoundException(id);
             } else {
                 cursoRepository.delete(curso);
-                return ResponseEntity.ok(curso);
+                return ResponseEntity.ok(cursoMapper.toDTO(curso));
             }
         } catch (ResponseStatusException e) {
             throw new GeneralBadRequestException("Eliminar", "Error al borrar el curso");
@@ -120,6 +120,30 @@ public class CursoRestController {
         }
         if (curso.getSiglas() == null || curso.getSiglas().isEmpty()) {
             throw new CursoBadRequestException("Siglas", "Las siglas son obligatorias");
+        }
+    }
+
+    @GetMapping("/cursos/all")
+    public ResponseEntity<?> listado(@RequestParam(name = "limit") Optional<String> limit,
+                                     @RequestParam(name = "nombre") Optional<String> nombre) {
+        List<Curso> cursos = null;
+        try {
+            if (nombre.isPresent()) {
+                cursos = cursoRepository.findByNombreContainsIgnoreCase(nombre.get());
+            } else {
+                cursos = cursoRepository.findAll();
+            }
+            if (limit.isPresent() && !cursos.isEmpty() && cursos.size() > Integer.parseInt(limit.get())) {
+                return ResponseEntity.ok(cursoMapper.toDTO(cursos.subList(0, Integer.parseInt(limit.get()))));
+            } else {
+                if (!cursos.isEmpty()) {
+                    return ResponseEntity.ok(cursoMapper.toListDTO(cursos));
+                } else {
+                    throw new CursosNotFoundException();
+                }
+            }
+        } catch (Exception e) {
+            throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
         }
     }
 }
