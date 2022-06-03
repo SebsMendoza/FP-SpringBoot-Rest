@@ -17,7 +17,7 @@ public class Calificacion {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private double nota;
+    private Double nota;
     @ManyToOne
     @JoinColumn(name = "id_alumno", referencedColumnName = "id", nullable = false)
     private Alumno alumno;
@@ -33,11 +33,11 @@ public class Calificacion {
         this.id = id;
     }
 
-    public double getNota() {
+    public Double getNota() {
         return nota;
     }
 
-    public void setNota(double nota) {
+    public void setNota(Double nota) {
         this.nota = nota;
     }
 

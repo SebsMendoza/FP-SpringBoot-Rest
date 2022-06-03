@@ -154,6 +154,7 @@ public class AlumnoRestController {
     @GetMapping("/alumnos/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
+            @RequestParam(required = false, name = "correo") Optional<String> correo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
@@ -162,6 +163,8 @@ public class AlumnoRestController {
         try {
             if (nombre.isPresent()) {
                 pagedResult = alumnoRepository.findByNombreContainsIgnoreCase(nombre.get(), paging);
+            } else if (correo.isPresent()){
+                pagedResult = alumnoRepository.findByNombreContainsIgnoreCase(correo.get(), paging);
             } else {
                 pagedResult = alumnoRepository.findAll(paging);
             }

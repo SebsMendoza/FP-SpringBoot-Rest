@@ -131,6 +131,7 @@ public class CursoRestController {
     @GetMapping("/cursos/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
+            @RequestParam(required = false, name = "siglas") Optional<String> siglas,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
@@ -139,12 +140,13 @@ public class CursoRestController {
         try {
             if (nombre.isPresent()) {
                 pagedResult = cursoRepository.findByNombreContainsIgnoreCase(nombre.get(), paging);
+            } else if (siglas.isPresent()) {
+                pagedResult = cursoRepository.findByNombreContainsIgnoreCase(siglas.get(), paging);
             } else {
                 pagedResult = cursoRepository.findAll(paging);
             }
-            List<Curso> cursos = pagedResult.getContent();
             ListCursoPageDTO listCursoPageDTO = ListCursoPageDTO.builder()
-                    .data(cursoMapper.toDTO(cursos))
+                    .data(cursoMapper.toDTO(pagedResult.getContent()))
                     .totalPages(pagedResult.getTotalPages())
                     .totalElements(pagedResult.getTotalElements())
                     .currentPage(pagedResult.getNumber())

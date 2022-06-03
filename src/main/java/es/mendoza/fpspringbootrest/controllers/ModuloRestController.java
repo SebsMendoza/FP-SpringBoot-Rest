@@ -128,6 +128,7 @@ public class ModuloRestController {
     @GetMapping("/modulos/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
+            @RequestParam(required = false, name = "siglas") Optional<String> siglas,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
@@ -136,12 +137,13 @@ public class ModuloRestController {
         try {
             if (nombre.isPresent()) {
                 pagedResult = moduloRepository.findByNombreContainsIgnoreCase(nombre.get(), paging);
+            } else if (siglas.isPresent()) {
+                pagedResult = moduloRepository.findByNombreContainsIgnoreCase(siglas.get(), paging);
             } else {
                 pagedResult = moduloRepository.findAll(paging);
             }
-            List<Modulo> modulos = pagedResult.getContent();
             ListModuloPageDTO listModuloPageDTO = ListModuloPageDTO.builder()
-                    .data(moduloMapper.toDTO(modulos))
+                    .data(moduloMapper.toDTO(pagedResult.getContent()))
                     .totalPages(pagedResult.getTotalPages())
                     .totalElements(pagedResult.getTotalPages())
                     .currentPage(pagedResult.getNumber())
