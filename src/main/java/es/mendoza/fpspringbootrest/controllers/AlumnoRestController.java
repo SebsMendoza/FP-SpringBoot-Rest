@@ -1,6 +1,8 @@
 package es.mendoza.fpspringbootrest.controllers;
 
 import es.mendoza.fpspringbootrest.dto.alumnos.CreateAlumnoDTO;
+import es.mendoza.fpspringbootrest.dto.alumnos.ListAlumnoDTO;
+import es.mendoza.fpspringbootrest.dto.alumnos.ListAlumnoPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.alumnos.AlumnoBadRequestException;
 import es.mendoza.fpspringbootrest.errors.alumnos.AlumnoNotFoundException;
@@ -10,6 +12,9 @@ import es.mendoza.fpspringbootrest.models.Alumno;
 import es.mendoza.fpspringbootrest.repositories.AlumnoRepository;
 import es.mendoza.fpspringbootrest.service.uploads.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -145,24 +150,29 @@ public class AlumnoRestController {
         }
     }
 
+    //Obtener todos los alumnos, paginable
     @GetMapping("/alumnos/all")
-    public ResponseEntity<?> listado(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
-        List<Alumno> alumnos = null;
+    public ResponseEntity<?> listado(
+            @RequestParam(required = false, name = "nombre") Optional<String> nombre,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<Alumno> pagedResult;
         try {
             if (nombre.isPresent()) {
-                alumnos = alumnoRepository.findByNombreContainsIgnoreCase(nombre.get());
+                pagedResult = alumnoRepository.findByNombreContainsIgnoreCase(nombre.get(), paging);
             } else {
-                alumnos = alumnoRepository.findAll();
+                pagedResult = alumnoRepository.findAll(paging);
             }
-            if (limit.isPresent() && !alumnos.isEmpty() && alumnos.size() > Integer.parseInt(limit.get())) {
-                return ResponseEntity.ok(alumnoMapper.toDTO(alumnos.subList(0, Integer.parseInt(limit.get()))));
-            } else {
-                if (!alumnos.isEmpty()) {
-                    return ResponseEntity.ok(alumnoMapper.toListDTO(alumnos));
-                } else {
-                    throw new AlumnosNotFoundException();
-                }
-            }
+            List<Alumno> alumnos = pagedResult.getContent();
+            ListAlumnoPageDTO listAlumnoPageDTO = ListAlumnoPageDTO.builder()
+                    .data(alumnoMapper.toDTO(alumnos))
+                    .totalPages(pagedResult.getTotalPages())
+                    .totalElements(pagedResult.getTotalElements())
+                    .currentPage(pagedResult.getNumber())
+                    .build();
+            return ResponseEntity.ok(listAlumnoPageDTO);
         } catch (Exception e) {
             throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
         }

@@ -1,6 +1,7 @@
 package es.mendoza.fpspringbootrest.controllers;
 
 import es.mendoza.fpspringbootrest.dto.modulos.CreateModuloDTO;
+import es.mendoza.fpspringbootrest.dto.modulos.ListModuloPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.modulos.ModuloBadRequestException;
 import es.mendoza.fpspringbootrest.errors.modulos.ModuloNotFoundException;
@@ -8,6 +9,9 @@ import es.mendoza.fpspringbootrest.errors.modulos.ModulosNotFoundException;
 import es.mendoza.fpspringbootrest.mapper.ModuloMapper;
 import es.mendoza.fpspringbootrest.models.Modulo;
 import es.mendoza.fpspringbootrest.repositories.ModuloRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -120,24 +124,29 @@ public class ModuloRestController {
         }
     }
 
+    //Obtener todos los módulos, paginable
     @GetMapping("/modulos/all")
-    public ResponseEntity<?> listado(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
-        List<Modulo> modulos = null;
+    public ResponseEntity<?> listado(
+            @RequestParam(required = false, name = "nombre") Optional<String> nombre,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<Modulo> pagedResult;
         try {
             if (nombre.isPresent()) {
-                modulos = moduloRepository.findByNombreContainsIgnoreCase(nombre.get());
+                pagedResult = moduloRepository.findByNombreContainsIgnoreCase(nombre.get(), paging);
             } else {
-                modulos = moduloRepository.findAll();
+                pagedResult = moduloRepository.findAll(paging);
             }
-            if (limit.isPresent() && !modulos.isEmpty() && modulos.size() > Integer.parseInt(limit.get())) {
-                return ResponseEntity.ok(moduloMapper.toDTO(modulos.subList(0, Integer.parseInt(limit.get()))));
-            } else {
-                if (!modulos.isEmpty()) {
-                    return ResponseEntity.ok(moduloMapper.toListDTO(modulos));
-                } else {
-                    throw new ModulosNotFoundException();
-                }
-            }
+            List<Modulo> modulos = pagedResult.getContent();
+            ListModuloPageDTO listModuloPageDTO = ListModuloPageDTO.builder()
+                    .data(moduloMapper.toDTO(modulos))
+                    .totalPages(pagedResult.getTotalPages())
+                    .totalElements(pagedResult.getTotalPages())
+                    .currentPage(pagedResult.getNumber())
+                    .build();
+            return ResponseEntity.ok(listModuloPageDTO);
         } catch (Exception e) {
             throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
         }

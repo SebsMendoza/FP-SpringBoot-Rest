@@ -1,6 +1,7 @@
 package es.mendoza.fpspringbootrest.controllers;
 
 import es.mendoza.fpspringbootrest.dto.cursos.CreateCursoDTO;
+import es.mendoza.fpspringbootrest.dto.cursos.ListCursoPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursoBadRequestException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursoNotFoundException;
@@ -9,6 +10,9 @@ import es.mendoza.fpspringbootrest.mapper.CursoMapper;
 import es.mendoza.fpspringbootrest.models.Curso;
 import es.mendoza.fpspringbootrest.repositories.CursoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -123,25 +127,29 @@ public class CursoRestController {
         }
     }
 
+    //Obtener todos los cursos, paginable
     @GetMapping("/cursos/all")
-    public ResponseEntity<?> listado(@RequestParam(name = "limit") Optional<String> limit,
-                                     @RequestParam(name = "nombre") Optional<String> nombre) {
-        List<Curso> cursos = null;
+    public ResponseEntity<?> listado(
+            @RequestParam(required = false, name = "nombre") Optional<String> nombre,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<Curso> pagedResult;
         try {
             if (nombre.isPresent()) {
-                cursos = cursoRepository.findByNombreContainsIgnoreCase(nombre.get());
+                pagedResult = cursoRepository.findByNombreContainsIgnoreCase(nombre.get(), paging);
             } else {
-                cursos = cursoRepository.findAll();
+                pagedResult = cursoRepository.findAll(paging);
             }
-            if (limit.isPresent() && !cursos.isEmpty() && cursos.size() > Integer.parseInt(limit.get())) {
-                return ResponseEntity.ok(cursoMapper.toDTO(cursos.subList(0, Integer.parseInt(limit.get()))));
-            } else {
-                if (!cursos.isEmpty()) {
-                    return ResponseEntity.ok(cursoMapper.toListDTO(cursos));
-                } else {
-                    throw new CursosNotFoundException();
-                }
-            }
+            List<Curso> cursos = pagedResult.getContent();
+            ListCursoPageDTO listCursoPageDTO = ListCursoPageDTO.builder()
+                    .data(cursoMapper.toDTO(cursos))
+                    .totalPages(pagedResult.getTotalPages())
+                    .totalElements(pagedResult.getTotalElements())
+                    .currentPage(pagedResult.getNumber())
+                    .build();
+            return ResponseEntity.ok(listCursoPageDTO);
         } catch (Exception e) {
             throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
         }
