@@ -1,6 +1,7 @@
 package es.mendoza.fpspringbootrest.models;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class Curso {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_curso")
     private Set<Modulo> modulos;
+    @CreatedDate
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() {

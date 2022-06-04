@@ -1,5 +1,6 @@
-package es.mendoza.fpspringbootrest.controllers;
+package es.mendoza.fpspringbootrest.controllers.files;
 
+import es.mendoza.fpspringbootrest.config.APIConfig;
 import es.mendoza.fpspringbootrest.errors.storage.StorageException;
 import es.mendoza.fpspringbootrest.service.uploads.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping(APIConfig.API_PATH + "/files")
 public class FilesRestController {
     private StorageService storageService;
 
@@ -25,7 +26,7 @@ public class FilesRestController {
         this.storageService = storageService;
     }
 
-    @GetMapping(value = "files/{filename:.+}")
+    @GetMapping(value = "{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request) {
         Resource file = storageService.loadAsResource(filename);
@@ -44,7 +45,7 @@ public class FilesRestController {
                 .body(file);
     }
 
-    @PostMapping(value = "files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> uploadFile(@RequestPart("file") MultipartFile file) {
         String urlImagen = null;
 

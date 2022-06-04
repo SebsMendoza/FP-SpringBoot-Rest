@@ -1,5 +1,6 @@
-package es.mendoza.fpspringbootrest.controllers;
+package es.mendoza.fpspringbootrest.controllers.curso;
 
+import es.mendoza.fpspringbootrest.config.APIConfig;
 import es.mendoza.fpspringbootrest.dto.cursos.CreateCursoDTO;
 import es.mendoza.fpspringbootrest.dto.cursos.ListCursoPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
@@ -19,9 +20,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
-
 @RestController
-@RequestMapping("/curso")
+// Definimos la url o entrada de la API REST, este caso la raíz: localhost:8080/rest/
+@RequestMapping(APIConfig.API_PATH + "/curso")
 public class CursoRestController {
     private final CursoRepository cursoRepository;
     private final CursoMapper cursoMapper;
@@ -35,7 +36,7 @@ public class CursoRestController {
     @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los cursos
-    @GetMapping("/cursos")
+    @GetMapping("")
     public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit,
                                      @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Curso> cursos = null;
@@ -60,7 +61,7 @@ public class CursoRestController {
     }
 
     //Obtenemos un curso por ID
-    @GetMapping("/cursos/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Curso curso = cursoRepository.findById(id).orElse(null);
         if (curso == null) {
@@ -71,7 +72,7 @@ public class CursoRestController {
     }
 
     //Insertar curso
-    @PostMapping("/cursos")
+    @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody CreateCursoDTO cursoDTO) {
         try {
             Curso curso = cursoMapper.fromDTO(cursoDTO);
@@ -84,7 +85,7 @@ public class CursoRestController {
     }
 
     //Actualizar curso por id
-    @PutMapping("/cursos/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Curso curso) {
         try {
             Curso cursoActualizado = cursoRepository.findById(id).orElse(null);
@@ -103,7 +104,7 @@ public class CursoRestController {
     }
 
     //Borrar un curso
-    @DeleteMapping("/cursos/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             Curso curso = cursoRepository.findById(id).orElse(null);
@@ -128,7 +129,7 @@ public class CursoRestController {
     }
 
     //Obtener todos los cursos, paginable
-    @GetMapping("/cursos/all")
+    @GetMapping("/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
             @RequestParam(required = false, name = "siglas") Optional<String> siglas,

@@ -1,7 +1,7 @@
-package es.mendoza.fpspringbootrest.controllers;
+package es.mendoza.fpspringbootrest.controllers.alumno;
 
+import es.mendoza.fpspringbootrest.config.APIConfig;
 import es.mendoza.fpspringbootrest.dto.alumnos.CreateAlumnoDTO;
-import es.mendoza.fpspringbootrest.dto.alumnos.ListAlumnoDTO;
 import es.mendoza.fpspringbootrest.dto.alumnos.ListAlumnoPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.alumnos.AlumnoBadRequestException;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/alumno")
+@RequestMapping(APIConfig.API_PATH + "/alumno")
 public class AlumnoRestController {
     private final AlumnoRepository alumnoRepository;
     private final StorageService storageService;
@@ -41,7 +41,7 @@ public class AlumnoRestController {
     @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los alumnos
-    @GetMapping("/alumnos")
+    @GetMapping("")
     public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Alumno> alumnos = null;
         try {
@@ -65,7 +65,7 @@ public class AlumnoRestController {
     }
 
     //Obtenemos un alumno por ID
-    @GetMapping("/alumnos/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Alumno alumno = alumnoRepository.findById(id).orElse(null);
         if (alumno == null) {
@@ -76,7 +76,7 @@ public class AlumnoRestController {
     }
 
     //Insertar alumno
-    @PostMapping("/alumnos")
+    @PostMapping("")
     public ResponseEntity<?> save(@RequestBody CreateAlumnoDTO alumnoDTO) {
         try {
             Alumno alumno = alumnoMapper.fromDTO(alumnoDTO);
@@ -89,7 +89,7 @@ public class AlumnoRestController {
     }
 
     //Actualizar alumno por id
-    @PutMapping("/alumnos/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Alumno alumno) {
         try {
             Alumno alumnoActualizado = alumnoRepository.findById(id).orElse(null);
@@ -108,7 +108,7 @@ public class AlumnoRestController {
     }
 
     //Borrar un alumno
-    @DeleteMapping("/alumnos/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             Alumno alumno = alumnoRepository.findById(id).orElse(null);
@@ -132,7 +132,7 @@ public class AlumnoRestController {
         }
     }
 
-    @PostMapping(value = "/alumnos/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> nuevoAlumno(@RequestPart("alumno") CreateAlumnoDTO alumnoDTO, @RequestPart("file") MultipartFile file) {
         String urlImagen = null;
         try {
@@ -151,7 +151,7 @@ public class AlumnoRestController {
     }
 
     //Obtener todos los alumnos, paginable
-    @GetMapping("/alumnos/all")
+    @GetMapping("/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
             @RequestParam(required = false, name = "correo") Optional<String> correo,

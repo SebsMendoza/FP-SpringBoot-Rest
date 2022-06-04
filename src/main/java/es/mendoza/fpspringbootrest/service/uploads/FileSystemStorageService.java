@@ -1,6 +1,6 @@
 package es.mendoza.fpspringbootrest.service.uploads;
 
-import es.mendoza.fpspringbootrest.controllers.FilesRestController;
+import es.mendoza.fpspringbootrest.controllers.files.FilesRestController;
 import es.mendoza.fpspringbootrest.errors.storage.StorageException;
 import es.mendoza.fpspringbootrest.errors.storage.StorageFileNotFoundException;
 import org.springframework.beans.factory.annotation.Value;

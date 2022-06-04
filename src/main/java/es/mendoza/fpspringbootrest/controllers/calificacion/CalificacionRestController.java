@@ -1,5 +1,6 @@
-package es.mendoza.fpspringbootrest.controllers;
+package es.mendoza.fpspringbootrest.controllers.calificacion;
 
+import es.mendoza.fpspringbootrest.config.APIConfig;
 import es.mendoza.fpspringbootrest.dto.calificaciones.CreateCalificacionDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionBadRequestException;
@@ -14,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/calificacion")
-public class CalificacionController {
+@RequestMapping(APIConfig.API_PATH + "/calificacion")
+public class CalificacionRestController {
     private final CalificacionRepository calificacionRepository;
     private final CalificacionMapper calificacionMapper;
 
-    public CalificacionController(CalificacionRepository calificacionRepository, CalificacionMapper calificacionMapper) {
+    public CalificacionRestController(CalificacionRepository calificacionRepository, CalificacionMapper calificacionMapper) {
         this.calificacionRepository = calificacionRepository;
         this.calificacionMapper = calificacionMapper;
     }
@@ -27,7 +28,7 @@ public class CalificacionController {
     @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtener todas las notas
-    @GetMapping("/notas")
+    @GetMapping("")
     public ResponseEntity<?> findAll() {
         List<Calificacion> notas = calificacionRepository.findAll();
         if (notas.isEmpty()) {
@@ -38,7 +39,7 @@ public class CalificacionController {
     }
 
     //Obtener nota por id
-    @GetMapping("/notas/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Calificacion nota = calificacionRepository.findById(id).orElse(null);
         if (nota == null) {
@@ -49,7 +50,7 @@ public class CalificacionController {
     }
 
     //Insertar nota
-    @PostMapping("/notas")
+    @PostMapping("")
     public ResponseEntity<?> save(@RequestBody CreateCalificacionDTO calificacionDTO) {
         try {
             Calificacion calificacion = calificacionMapper.fromDTO(calificacionDTO);
@@ -62,7 +63,7 @@ public class CalificacionController {
     }
 
     //Actualizar nota por id
-    @PutMapping("/notas/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Calificacion calificacion) {
         try {
             Calificacion notaActualizada = calificacionRepository.findById(id).orElse(null);
@@ -80,7 +81,7 @@ public class CalificacionController {
     }
 
     //Borrar nota por id
-    @DeleteMapping("/notas/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             Calificacion nota = calificacionRepository.findById(id).orElse(null);
@@ -101,7 +102,7 @@ public class CalificacionController {
         }
     }
 
-    @GetMapping("/notas/all")
+    @GetMapping("/all")
     public ResponseEntity<?> listado() {
         List<Calificacion> notas = calificacionRepository.findAll();
         if (notas.isEmpty()) {

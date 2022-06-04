@@ -1,5 +1,6 @@
-package es.mendoza.fpspringbootrest.controllers;
+package es.mendoza.fpspringbootrest.controllers.modulo;
 
+import es.mendoza.fpspringbootrest.config.APIConfig;
 import es.mendoza.fpspringbootrest.dto.modulos.CreateModuloDTO;
 import es.mendoza.fpspringbootrest.dto.modulos.ListModuloPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/modulo")
+@RequestMapping(APIConfig.API_PATH + "/modulo")
 public class ModuloRestController {
     private final ModuloRepository moduloRepository;
     private final ModuloMapper moduloMapper;
@@ -33,7 +34,7 @@ public class ModuloRestController {
     @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los módulos
-    @GetMapping("/modulos")
+    @GetMapping("")
     public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Modulo> modulos = null;
         try {
@@ -57,7 +58,7 @@ public class ModuloRestController {
     }
 
     //Obtenemos un módulo por id
-    @GetMapping("/modulos/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Modulo modulo = moduloRepository.findById(id).orElse(null);
         if (modulo == null) {
@@ -68,7 +69,7 @@ public class ModuloRestController {
     }
 
     //Insertar un módulo
-    @PostMapping("/modulos")
+    @PostMapping("")
     public ResponseEntity<?> save(@RequestBody CreateModuloDTO moduloDTO) {
         try {
             Modulo modulo = moduloMapper.fromDTO(moduloDTO);
@@ -81,7 +82,7 @@ public class ModuloRestController {
     }
 
     //Actualizando modulo por id
-    @PutMapping("/modulos/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Modulo modulo) {
         try {
             Modulo moduloActualizado = moduloRepository.findById(id).orElse(null);
@@ -100,7 +101,7 @@ public class ModuloRestController {
     }
 
     //Borrar un módulo
-    @DeleteMapping("/modulos/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             Modulo modulo = moduloRepository.findById(id).orElse(null);
@@ -125,7 +126,7 @@ public class ModuloRestController {
     }
 
     //Obtener todos los módulos, paginable
-    @GetMapping("/modulos/all")
+    @GetMapping("/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
             @RequestParam(required = false, name = "siglas") Optional<String> siglas,

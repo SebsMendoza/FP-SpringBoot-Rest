@@ -1,5 +1,6 @@
 package es.mendoza.fpspringbootrest.dto.modulos;
 
+import es.mendoza.fpspringbootrest.config.APIConfig;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.List;
 public class ListModuloPageDTO {
     private final LocalDateTime consulta = LocalDateTime.now();
     private final String project = "SpringBootDAM";
-    private final String version = "1.0";
+    private final String version = APIConfig.API_VERSION;
     private List<ModuloDTO> data;
     private int currentPage;
     private long totalElements;
