@@ -28,7 +28,7 @@ public class CalificacionRestController {
     @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtener todas las notas
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseEntity<?> findAll() {
         List<Calificacion> notas = calificacionRepository.findAll();
         if (notas.isEmpty()) {
@@ -50,7 +50,7 @@ public class CalificacionRestController {
     }
 
     //Insertar nota
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody CreateCalificacionDTO calificacionDTO) {
         try {
             Calificacion calificacion = calificacionMapper.fromDTO(calificacionDTO);
@@ -58,6 +58,7 @@ public class CalificacionRestController {
             Calificacion notaInsertada = calificacionRepository.save(calificacion);
             return ResponseEntity.ok(calificacionMapper.toDTO(notaInsertada));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new GeneralBadRequestException("Insertar", "Error al insertar la calificación");
         }
     }

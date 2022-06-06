@@ -37,7 +37,6 @@ public class UsuarioController {
 
     }
 
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     public GetUsuarioDTO me(@AuthenticationPrincipal Usuario user) {
         return ususuarioMapper.toDTO(user);

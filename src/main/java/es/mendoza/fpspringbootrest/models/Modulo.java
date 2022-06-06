@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -22,7 +23,9 @@ public class Modulo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private int anio;
+    @NotNull(message = "Nombre no puede ser nulo")
     private String nombre;
+    @NotNull(message = "Siglas no puede ser nulo")
     @Column(unique = true)
     private String siglas;
     @CreatedDate

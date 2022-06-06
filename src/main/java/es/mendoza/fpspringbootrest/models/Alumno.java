@@ -8,6 +8,8 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -20,7 +22,9 @@ public class Alumno {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NotNull(message = "Nombre no puede ser nulo")
     private String nombre;
+    @Email(regexp = ".*@.*\\..*", message = "Email debe ser un email valido")
     @Column(unique = true)
     private String correo;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "alumno", cascade = CascadeType.ALL)

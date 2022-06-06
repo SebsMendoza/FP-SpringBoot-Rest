@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class AlumnoRestController {
     @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los alumnos
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Alumno> alumnos = null;
         try {
@@ -76,7 +77,7 @@ public class AlumnoRestController {
     }
 
     //Insertar alumno
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody CreateAlumnoDTO alumnoDTO) {
         try {
             Alumno alumno = alumnoMapper.fromDTO(alumnoDTO);
@@ -84,6 +85,7 @@ public class AlumnoRestController {
             Alumno alumnoInsertado = alumnoRepository.save(alumno);
             return ResponseEntity.ok(alumnoMapper.toDTO(alumnoInsertado));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new GeneralBadRequestException("Insertar", "Error al insertar el alumno. Campos incorrectos");
         }
     }
@@ -156,9 +158,10 @@ public class AlumnoRestController {
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
             @RequestParam(required = false, name = "correo") Optional<String> correo,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sort
     ) {
-        Pageable paging = PageRequest.of(page, size);
+        Pageable paging = PageRequest.of(page, size, Sort.Direction.ASC, sort);
         Page<Alumno> pagedResult;
         try {
             if (nombre.isPresent()) {
@@ -174,6 +177,7 @@ public class AlumnoRestController {
                     .totalPages(pagedResult.getTotalPages())
                     .totalElements(pagedResult.getTotalElements())
                     .currentPage(pagedResult.getNumber())
+                    .sort(pagedResult.getSort().toString())
                     .build();
             return ResponseEntity.ok(listAlumnoPageDTO);
         } catch (Exception e) {

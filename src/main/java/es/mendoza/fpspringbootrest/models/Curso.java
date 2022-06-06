@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -15,7 +16,9 @@ public class Curso {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NotNull(message = "Nombre no puede ser nulo")
     private String nombre;
+    @NotNull(message = "Siglas no puede ser nulo")
     @Column(unique = true)
     private String siglas;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

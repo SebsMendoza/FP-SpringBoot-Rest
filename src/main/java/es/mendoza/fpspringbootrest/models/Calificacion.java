@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -17,6 +18,7 @@ public class Calificacion {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NotNull(message = "Nota no puede ser nula")
     private Double nota;
     @ManyToOne
     @JoinColumn(name = "id_alumno", referencedColumnName = "id", nullable = false)

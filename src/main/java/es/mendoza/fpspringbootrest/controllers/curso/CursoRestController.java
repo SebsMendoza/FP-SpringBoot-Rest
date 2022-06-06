@@ -2,6 +2,7 @@ package es.mendoza.fpspringbootrest.controllers.curso;
 
 import es.mendoza.fpspringbootrest.config.APIConfig;
 import es.mendoza.fpspringbootrest.dto.cursos.CreateCursoDTO;
+import es.mendoza.fpspringbootrest.dto.cursos.CursoDTO;
 import es.mendoza.fpspringbootrest.dto.cursos.ListCursoPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursoBadRequestException;
@@ -10,18 +11,22 @@ import es.mendoza.fpspringbootrest.errors.cursos.CursosNotFoundException;
 import es.mendoza.fpspringbootrest.mapper.CursoMapper;
 import es.mendoza.fpspringbootrest.models.Curso;
 import es.mendoza.fpspringbootrest.repositories.CursoRepository;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+
 @RestController
-// Definimos la url o entrada de la API REST, este caso la raíz: localhost:8080/rest/
 @RequestMapping(APIConfig.API_PATH + "/curso")
 public class CursoRestController {
     private final CursoRepository cursoRepository;
@@ -33,10 +38,14 @@ public class CursoRestController {
         this.cursoMapper = cursoMapper;
     }
 
-    @CrossOrigin(origins = "http://localhost:7575")
-
     //Obtenemos todos los cursos
-    @GetMapping("")
+    @ApiOperation(value = "Obtener todos los cursos", notes = "Obtiene todos los cursos")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CursoDTO.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "Not Found", response = CursosNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
+    @GetMapping("/")
     public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit,
                                      @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Curso> cursos = null;
@@ -61,6 +70,11 @@ public class CursoRestController {
     }
 
     //Obtenemos un curso por ID
+    @ApiOperation(value = "Obtener un curso por id", notes = "Obtiene un curso por id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CursoDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CursoNotFoundException.class)
+    })
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Curso curso = cursoRepository.findById(id).orElse(null);
@@ -72,6 +86,11 @@ public class CursoRestController {
     }
 
     //Insertar curso
+    @ApiOperation(value = "Crear un curso", notes = "Crea un curso")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Created", response = CursoDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody CreateCursoDTO cursoDTO) {
         try {
@@ -80,11 +99,18 @@ public class CursoRestController {
             Curso cursoInsertado = cursoRepository.save(curso);
             return ResponseEntity.ok(cursoMapper.toDTO(cursoInsertado));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new GeneralBadRequestException("Insertar", "Error al insertar el curso. Campos incorrectos");
         }
     }
 
     //Actualizar curso por id
+    @ApiOperation(value = "Actualizar un curso", notes = "Actualiza un curso por id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CursoDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CursosNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Curso curso) {
         try {
@@ -104,6 +130,12 @@ public class CursoRestController {
     }
 
     //Borrar un curso
+    @ApiOperation(value = "Eliminar un curso", notes = "Elimina un curso dado su id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CursoDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CursoNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
@@ -129,14 +161,20 @@ public class CursoRestController {
     }
 
     //Obtener todos los cursos, paginable
+    @ApiOperation(value = "Obtiene una lista de cursos", notes = "Obtiene una lista de cursos paginada, filtrada y ordenada")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListCursoPageDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @GetMapping("/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
             @RequestParam(required = false, name = "siglas") Optional<String> siglas,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sort
     ) {
-        Pageable paging = PageRequest.of(page, size);
+        Pageable paging = PageRequest.of(page, size, Sort.Direction.ASC, sort);
         Page<Curso> pagedResult;
         try {
             if (nombre.isPresent()) {
@@ -151,6 +189,7 @@ public class CursoRestController {
                     .totalPages(pagedResult.getTotalPages())
                     .totalElements(pagedResult.getTotalElements())
                     .currentPage(pagedResult.getNumber())
+                    .sort(pagedResult.getSort().toString())
                     .build();
             return ResponseEntity.ok(listCursoPageDTO);
         } catch (Exception e) {

@@ -98,9 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, APIConfig.API_PATH + "/auth/calificacion/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, APIConfig.API_PATH + "/auth/calificacion/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, APIConfig.API_PATH + "/auth/calificacion/**").hasRole("ADMIN")
-                .anyRequest().not().authenticated()
-                .and().csrf().ignoringAntMatchers("/h2-console/**")
-                .and().headers().frameOptions().sameOrigin();
+                .anyRequest().not().authenticated();
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

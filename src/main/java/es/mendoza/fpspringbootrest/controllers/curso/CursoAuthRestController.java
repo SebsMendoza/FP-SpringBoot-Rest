@@ -2,6 +2,7 @@ package es.mendoza.fpspringbootrest.controllers.curso;
 
 import es.mendoza.fpspringbootrest.config.APIConfig;
 import es.mendoza.fpspringbootrest.dto.cursos.CreateCursoDTO;
+import es.mendoza.fpspringbootrest.dto.cursos.CursoDTO;
 import es.mendoza.fpspringbootrest.dto.cursos.ListCursoPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.cursos.CursoBadRequestException;
@@ -10,6 +11,10 @@ import es.mendoza.fpspringbootrest.errors.cursos.CursosNotFoundException;
 import es.mendoza.fpspringbootrest.mapper.CursoMapper;
 import es.mendoza.fpspringbootrest.models.Curso;
 import es.mendoza.fpspringbootrest.repositories.CursoRepository;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(APIConfig.API_PATH + "/auth/curso")
 public class CursoAuthRestController {
     private final CursoRepository cursoRepository;
@@ -36,6 +42,14 @@ public class CursoAuthRestController {
     @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los cursos
+    @ApiOperation(value = "Obtener todos los cursos", notes = "Obtiene todos los cursos")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CursoDTO.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "Not Found", response = CursosNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @GetMapping("/")
     public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit,
                                      @RequestParam(name = "nombre") Optional<String> nombre) {
@@ -61,6 +75,13 @@ public class CursoAuthRestController {
     }
 
     //Obtenemos un curso por ID
+    @ApiOperation(value = "Obtener un curso por id", notes = "Obtiene un curso por id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CursoDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CursoNotFoundException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Curso curso = cursoRepository.findById(id).orElse(null);
@@ -72,6 +93,13 @@ public class CursoAuthRestController {
     }
 
     //Insertar curso
+    @ApiOperation(value = "Crear un curso", notes = "Crea un curso")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Created", response = CursoDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody CreateCursoDTO cursoDTO) {
         try {
@@ -85,6 +113,14 @@ public class CursoAuthRestController {
     }
 
     //Actualizar curso por id
+    @ApiOperation(value = "Actualizar un curso", notes = "Actualiza un curso por id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CursoDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CursosNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Curso curso) {
         try {
@@ -104,6 +140,14 @@ public class CursoAuthRestController {
     }
 
     //Borrar un curso
+    @ApiOperation(value = "Eliminar un curso", notes = "Elimina un curso dado su id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CursoDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CursoNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
@@ -129,6 +173,13 @@ public class CursoAuthRestController {
     }
 
     //Obtener todos los cursos, paginable
+    @ApiOperation(value = "Obtiene una lista de cursos", notes = "Obtiene una lista de cursos paginada, filtrada y ordenada")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListCursoPageDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @GetMapping("/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,

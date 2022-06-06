@@ -13,6 +13,7 @@ import es.mendoza.fpspringbootrest.repositories.ModuloRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,7 +35,7 @@ public class ModuloRestController {
     @CrossOrigin(origins = "http://localhost:7575")
 
     //Obtenemos todos los módulos
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Modulo> modulos = null;
         try {
@@ -69,7 +70,7 @@ public class ModuloRestController {
     }
 
     //Insertar un módulo
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody CreateModuloDTO moduloDTO) {
         try {
             Modulo modulo = moduloMapper.fromDTO(moduloDTO);
@@ -77,6 +78,7 @@ public class ModuloRestController {
             Modulo moduloInsertado = moduloRepository.save(modulo);
             return ResponseEntity.ok(moduloMapper.toDTO(moduloInsertado));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new GeneralBadRequestException("Insertar", "Error al insertar el módulo. Campos incorrectos");
         }
     }
@@ -131,9 +133,10 @@ public class ModuloRestController {
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,
             @RequestParam(required = false, name = "siglas") Optional<String> siglas,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sort
     ) {
-        Pageable paging = PageRequest.of(page, size);
+        Pageable paging = PageRequest.of(page, size, Sort.Direction.ASC, sort);
         Page<Modulo> pagedResult;
         try {
             if (nombre.isPresent()) {
@@ -148,6 +151,7 @@ public class ModuloRestController {
                     .totalPages(pagedResult.getTotalPages())
                     .totalElements(pagedResult.getTotalPages())
                     .currentPage(pagedResult.getNumber())
+                    .sort(pagedResult.getSort().toString())
                     .build();
             return ResponseEntity.ok(listModuloPageDTO);
         } catch (Exception e) {
