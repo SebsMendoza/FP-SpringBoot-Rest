@@ -1,7 +1,9 @@
 package es.mendoza.fpspringbootrest.controllers.calificacion;
 
 import es.mendoza.fpspringbootrest.config.APIConfig;
+import es.mendoza.fpspringbootrest.dto.calificaciones.CalificacionDTO;
 import es.mendoza.fpspringbootrest.dto.calificaciones.CreateCalificacionDTO;
+import es.mendoza.fpspringbootrest.dto.calificaciones.ListCalificacionPageDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionBadRequestException;
 import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionNotFoundException;
@@ -9,6 +11,9 @@ import es.mendoza.fpspringbootrest.errors.calificaciones.CalificacionesNotFoundE
 import es.mendoza.fpspringbootrest.mapper.CalificacionMapper;
 import es.mendoza.fpspringbootrest.models.Calificacion;
 import es.mendoza.fpspringbootrest.repositories.CalificacionRepository;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +30,15 @@ public class CalificacionAuthRestController {
         this.calificacionMapper = calificacionMapper;
     }
 
-    @CrossOrigin(origins = "http://localhost:7575")
-
     //Obtener todas las notas
+    @ApiOperation(value = "Obtener todas las calificaciones", notes = "Obtiene todas las calificaciones")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CalificacionDTO.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "Not Found", response = CalificacionesNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @GetMapping("/")
     public ResponseEntity<?> findAll() {
         List<Calificacion> notas = calificacionRepository.findAll();
@@ -39,6 +50,13 @@ public class CalificacionAuthRestController {
     }
 
     //Obtener nota por id
+    @ApiOperation(value = "Obtener una calificacion por id", notes = "Obtiene una calificacion por id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CalificacionDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CalificacionNotFoundException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Calificacion nota = calificacionRepository.findById(id).orElse(null);
@@ -50,6 +68,13 @@ public class CalificacionAuthRestController {
     }
 
     //Insertar nota
+    @ApiOperation(value = "Crear una calificación", notes = "Crea una calificación")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Created", response = CalificacionDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody CreateCalificacionDTO calificacionDTO) {
         try {
@@ -63,6 +88,14 @@ public class CalificacionAuthRestController {
     }
 
     //Actualizar nota por id
+    @ApiOperation(value = "Actualizar una calificación", notes = "Actualiza una calificación por id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CalificacionDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CalificacionNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Calificacion calificacion) {
         try {
@@ -81,6 +114,14 @@ public class CalificacionAuthRestController {
     }
 
     //Borrar nota por id
+    @ApiOperation(value = "Eliminar una calificación", notes = "Elimina una calificación dado su id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = CalificacionDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = CalificacionNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
@@ -96,12 +137,25 @@ public class CalificacionAuthRestController {
         }
     }
 
+    /**
+     * Método que comprueba los datos de la calificación
+     *
+     * @param calificacion Nota tiene que ser positiva
+     * @throws CalificacionBadRequestException si los datos no son correctos
+     */
     private void checkCalificacionData(Calificacion calificacion) {
         if (calificacion.getNota() < 0) {
             throw new CalificacionBadRequestException("Nota", "La nota debe ser mayor que 0");
         }
     }
 
+    @ApiOperation(value = "Obtiene una lista de calificaciones", notes = "Obtiene una lista de calificaciones paginada, filtrada y ordenada")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListCalificacionPageDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @GetMapping("/all")
     public ResponseEntity<?> listado() {
         List<Calificacion> notas = calificacionRepository.findAll();

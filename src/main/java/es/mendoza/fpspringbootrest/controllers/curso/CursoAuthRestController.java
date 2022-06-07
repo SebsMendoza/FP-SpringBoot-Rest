@@ -14,6 +14,7 @@ import es.mendoza.fpspringbootrest.repositories.CursoRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,17 +28,11 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping(APIConfig.API_PATH + "/auth/curso")
 public class CursoAuthRestController {
     private final CursoRepository cursoRepository;
     private final CursoMapper cursoMapper;
-
-    @Autowired
-    public CursoAuthRestController(CursoRepository cursoRepository, CursoMapper cursoMapper) {
-        this.cursoRepository = cursoRepository;
-        this.cursoMapper = cursoMapper;
-    }
 
     @CrossOrigin(origins = "http://localhost:7575")
 

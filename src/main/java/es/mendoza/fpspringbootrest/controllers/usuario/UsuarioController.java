@@ -10,6 +10,9 @@ import es.mendoza.fpspringbootrest.mapper.UsuarioMapper;
 import es.mendoza.fpspringbootrest.models.Usuario;
 import es.mendoza.fpspringbootrest.models.UsuarioRol;
 import es.mendoza.fpspringbootrest.service.users.UsuarioService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,17 +34,33 @@ public class UsuarioController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
 
+    @ApiOperation(value = "Crea un usuario")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Usuario creado"),
+            @ApiResponse(code = 400, message = "Error al crear usuario")
+    })
     @PostMapping("/")
     public GetUsuarioDTO nuevoUsuario(@RequestBody CreateUsuarioDTO newUser) {
         return ususuarioMapper.toDTO(usuarioService.nuevoUsuario(newUser));
 
     }
 
+    @ApiOperation(value = "Devuelve los datos del usuario")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Usuario devuelto"),
+            @ApiResponse(code = 401, message = "No autenticado"),
+            @ApiResponse(code = 403, message = "No autorizado")
+    })
     @GetMapping("/me")
     public GetUsuarioDTO me(@AuthenticationPrincipal Usuario user) {
         return ususuarioMapper.toDTO(user);
     }
 
+    @ApiOperation(value = "Autentica un usuario")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Usuario autenticado y token generado"),
+            @ApiResponse(code = 400, message = "Error al autenticar usuario"),
+    })
     @PostMapping("/login")
     public JwtUserResponse login(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication =
@@ -59,6 +78,13 @@ public class UsuarioController {
 
     }
 
+    /**
+     * Método que convierte un usuario y un token a una respuesta de usuario
+     *
+     * @param user     Usuario
+     * @param jwtToken Token
+     * @return JwtUserResponse con el usuario y el token
+     */
     private JwtUserResponse convertUserEntityAndTokenToJwtUserResponse(Usuario user, String jwtToken) {
         return JwtUserResponse
                 .jwtUserResponseBuilder()

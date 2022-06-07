@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class JwtUserResponse extends GetUsuarioDTO {
+    @NotNull(message = "El token no puede ser nulo")
     private String token;
 
     @Builder(builderMethodName = "jwtUserResponseBuilder")

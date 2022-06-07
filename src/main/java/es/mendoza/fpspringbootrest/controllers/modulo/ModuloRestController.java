@@ -3,6 +3,7 @@ package es.mendoza.fpspringbootrest.controllers.modulo;
 import es.mendoza.fpspringbootrest.config.APIConfig;
 import es.mendoza.fpspringbootrest.dto.modulos.CreateModuloDTO;
 import es.mendoza.fpspringbootrest.dto.modulos.ListModuloPageDTO;
+import es.mendoza.fpspringbootrest.dto.modulos.ModuloDTO;
 import es.mendoza.fpspringbootrest.errors.GeneralBadRequestException;
 import es.mendoza.fpspringbootrest.errors.modulos.ModuloBadRequestException;
 import es.mendoza.fpspringbootrest.errors.modulos.ModuloNotFoundException;
@@ -10,6 +11,10 @@ import es.mendoza.fpspringbootrest.errors.modulos.ModulosNotFoundException;
 import es.mendoza.fpspringbootrest.mapper.ModuloMapper;
 import es.mendoza.fpspringbootrest.models.Modulo;
 import es.mendoza.fpspringbootrest.repositories.ModuloRepository;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,19 +27,19 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(APIConfig.API_PATH + "/modulo")
 public class ModuloRestController {
     private final ModuloRepository moduloRepository;
     private final ModuloMapper moduloMapper;
 
-    public ModuloRestController(ModuloRepository moduloRepository, ModuloMapper moduloMapper) {
-        this.moduloRepository = moduloRepository;
-        this.moduloMapper = moduloMapper;
-    }
-
-    @CrossOrigin(origins = "http://localhost:7575")
-
     //Obtenemos todos los módulos
+    @ApiOperation(value = "Obtener todos los módulos", notes = "Obtiene todos los módulos")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ModuloDTO.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "Not Found", response = ModulosNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @GetMapping("/")
     public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
         List<Modulo> modulos = null;
@@ -59,6 +64,11 @@ public class ModuloRestController {
     }
 
     //Obtenemos un módulo por id
+    @ApiOperation(value = "Obtener un módulo por id", notes = "Obtiene un módulo por id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ModuloDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = ModuloNotFoundException.class)
+    })
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Modulo modulo = moduloRepository.findById(id).orElse(null);
@@ -70,6 +80,11 @@ public class ModuloRestController {
     }
 
     //Insertar un módulo
+    @ApiOperation(value = "Crear un módulo", notes = "Crea un módulo")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Created", response = ModuloDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody CreateModuloDTO moduloDTO) {
         try {
@@ -84,6 +99,12 @@ public class ModuloRestController {
     }
 
     //Actualizando modulo por id
+    @ApiOperation(value = "Actualizar un módulo", notes = "Actualiza un módulo por id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ModuloDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = ModuloNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Modulo modulo) {
         try {
@@ -103,6 +124,12 @@ public class ModuloRestController {
     }
 
     //Borrar un módulo
+    @ApiOperation(value = "Eliminar un módulo", notes = "Elimina un módulo dado su id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ModuloDTO.class),
+            @ApiResponse(code = 404, message = "Not Found", response = ModuloNotFoundException.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
@@ -128,6 +155,11 @@ public class ModuloRestController {
     }
 
     //Obtener todos los módulos, paginable
+    @ApiOperation(value = "Obtiene una lista de módulos", notes = "Obtiene una lista de módulos paginada, filtrada y ordenada")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListModuloPageDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+    })
     @GetMapping("/all")
     public ResponseEntity<?> listado(
             @RequestParam(required = false, name = "nombre") Optional<String> nombre,

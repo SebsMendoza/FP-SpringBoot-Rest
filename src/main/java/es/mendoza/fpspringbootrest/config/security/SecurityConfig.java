@@ -59,12 +59,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, APIConfig.API_PATH + "/curso/**").permitAll()
                 .antMatchers(HttpMethod.POST, APIConfig.API_PATH + "/curso/**").permitAll()
                 .antMatchers(HttpMethod.PUT, APIConfig.API_PATH + "/curso/**").permitAll()
-                .antMatchers(HttpMethod.DELETE, APIConfig.API_PATH + "/curso/**").permitAll()
+                .antMatchers(HttpMethod.DELETE, APIConfig.API_PATH + "/curso/**").denyAll()
                 //Permisos Módulo
                 .antMatchers(HttpMethod.GET, APIConfig.API_PATH + "/modulo/**").permitAll()
                 .antMatchers(HttpMethod.POST, APIConfig.API_PATH + "/modulo/**").permitAll()
                 .antMatchers(HttpMethod.PUT, APIConfig.API_PATH + "/modulo/**").permitAll()
-                .antMatchers(HttpMethod.DELETE, APIConfig.API_PATH + "/modulo/**").permitAll()
+                .antMatchers(HttpMethod.DELETE, APIConfig.API_PATH + "/modulo/**").denyAll()
                 //Permisos Alumno
                 .antMatchers(HttpMethod.GET, APIConfig.API_PATH + "/alumno/**").permitAll()
                 .antMatchers(HttpMethod.POST, APIConfig.API_PATH + "/alumno/**").permitAll()

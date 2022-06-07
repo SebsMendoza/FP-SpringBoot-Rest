@@ -12,4 +12,6 @@ import javax.validation.constraints.NotBlank;
 public class CreateCalificacionDTO {
     @NotBlank(message = "La nota no puede estar vacía")
     private double nota;
+    private int alumno;
+    private int modulo;
 }

@@ -14,6 +14,7 @@ import es.mendoza.fpspringbootrest.repositories.CursoRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,16 +28,11 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(APIConfig.API_PATH + "/curso")
 public class CursoRestController {
     private final CursoRepository cursoRepository;
     private final CursoMapper cursoMapper;
-
-    @Autowired
-    public CursoRestController(CursoRepository cursoRepository, CursoMapper cursoMapper) {
-        this.cursoRepository = cursoRepository;
-        this.cursoMapper = cursoMapper;
-    }
 
     //Obtenemos todos los cursos
     @ApiOperation(value = "Obtener todos los cursos", notes = "Obtiene todos los cursos")

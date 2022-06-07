@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class ListCalificacioPageDTO {
+public class ListCalificacionPageDTO {
     private final String consulta = LocalDateTime.now().toString();
     private final String project = "SpringBootDAM";
     private final String version = APIConfig.API_VERSION;
