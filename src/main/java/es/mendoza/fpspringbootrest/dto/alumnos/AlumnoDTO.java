@@ -19,6 +19,6 @@ public class AlumnoDTO {
     private String correo;
     private Set<Calificacion> notas;
     private String createdAt;
-    private LocalDateTime updatedAt;
+    private String updatedAt;
     private String imagen;
 }

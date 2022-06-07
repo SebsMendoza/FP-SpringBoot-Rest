@@ -14,21 +14,19 @@ import es.mendoza.fpspringbootrest.repositories.CalificacionRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(APIConfig.API_PATH + "/calificacion")
 public class CalificacionRestController {
     private final CalificacionRepository calificacionRepository;
     private final CalificacionMapper calificacionMapper;
-
-    public CalificacionRestController(CalificacionRepository calificacionRepository, CalificacionMapper calificacionMapper) {
-        this.calificacionRepository = calificacionRepository;
-        this.calificacionMapper = calificacionMapper;
-    }
 
     //Obtener todas las notas
     @ApiOperation(value = "Obtener todas las calificaciones", notes = "Obtiene todas las calificaciones")
@@ -38,12 +36,21 @@ public class CalificacionRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @GetMapping("/")
-    public ResponseEntity<?> findAll() {
-        List<Calificacion> notas = calificacionRepository.findAll();
-        if (notas.isEmpty()) {
-            throw new CalificacionesNotFoundException();
-        } else {
-            return ResponseEntity.ok(calificacionMapper.toDTO(notas));
+    public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit) {
+        List<Calificacion> notas = null;
+        try {
+            notas = calificacionRepository.findAll();
+            if (limit.isPresent() && !notas.isEmpty() && notas.size() > Integer.parseInt(limit.get())) {
+                return ResponseEntity.ok(calificacionMapper.toDTO(notas.subList(0, Integer.parseInt(limit.get()))));
+            } else {
+                if (!notas.isEmpty()) {
+                    return ResponseEntity.ok(calificacionMapper.toDTO(notas));
+                } else {
+                    throw new CalificacionesNotFoundException();
+                }
+            }
+        } catch (Exception e) {
+            throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
         }
     }
 

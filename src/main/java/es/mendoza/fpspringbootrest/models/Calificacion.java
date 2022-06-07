@@ -23,7 +23,7 @@ public class Calificacion {
     @ManyToOne
     @JoinColumn(name = "id_alumno", referencedColumnName = "id", nullable = false)
     private Alumno alumno;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_modulo", referencedColumnName = "id", nullable = false)
     private Modulo modulo;
 

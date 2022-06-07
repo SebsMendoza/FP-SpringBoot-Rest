@@ -1,16 +1,12 @@
 package es.mendoza.fpspringbootrest.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -27,10 +23,10 @@ public class Alumno {
     @Email(regexp = ".*@.*\\..*", message = "Email debe ser un email valido")
     @Column(unique = true)
     private String correo;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "alumno", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "alumno", cascade = CascadeType.ALL)
     private Set<Calificacion> notas;
     @CreatedDate
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private String createdAt = LocalDateTime.now().toString();
     private LocalDateTime updatedAt;
     private String imagen;
 
@@ -59,11 +55,11 @@ public class Alumno {
         this.correo = correo;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 

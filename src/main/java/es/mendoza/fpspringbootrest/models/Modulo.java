@@ -1,12 +1,8 @@
 package es.mendoza.fpspringbootrest.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.web.bind.annotation.GetMapping;
 
 
 import javax.persistence.*;
@@ -29,8 +25,8 @@ public class Modulo {
     @Column(unique = true)
     private String siglas;
     @CreatedDate
-    private LocalDateTime createdAt = LocalDateTime.now();
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "modulo", cascade = CascadeType.REMOVE)
+    private String createdAt = LocalDateTime.now().toString();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "modulo", cascade = CascadeType.ALL)
     private Set<Calificacion> notas;
 
     public Long getId() {
@@ -65,11 +61,11 @@ public class Modulo {
         this.siglas = siglas;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
