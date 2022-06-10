@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -19,14 +20,14 @@ public class Modulo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private int anio;
-    @NotNull(message = "Nombre no puede ser nulo")
+    @NotBlank(message = "Nombre no puede estar vacío")
     private String nombre;
     @NotNull(message = "Siglas no puede ser nulo")
     @Column(unique = true)
     private String siglas;
     @CreatedDate
     private String createdAt = LocalDateTime.now().toString();
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "modulo", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "modulo", cascade = CascadeType.REMOVE)
     private Set<Calificacion> notas;
 
     public Long getId() {
@@ -69,7 +70,7 @@ public class Modulo {
         this.createdAt = createdAt;
     }
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "modulo-nota")
     public Set<Calificacion> getNotas() {
         return notas;
     }

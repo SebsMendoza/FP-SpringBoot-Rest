@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -18,12 +19,12 @@ public class Alumno {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotNull(message = "Nombre no puede ser nulo")
+    @NotBlank(message = "Nombre no puede estar vacío")
     private String nombre;
     @Email(regexp = ".*@.*\\..*", message = "Email debe ser un email valido")
     @Column(unique = true)
     private String correo;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "alumno", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "alumno", cascade = CascadeType.REMOVE)
     private Set<Calificacion> notas;
     @CreatedDate
     private String createdAt = LocalDateTime.now().toString();
@@ -79,7 +80,7 @@ public class Alumno {
         this.imagen = imagen;
     }
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "alumno-nota")
     public Set<Calificacion> getNotas() {
         return notas;
     }

@@ -14,6 +14,7 @@ import es.mendoza.fpspringbootrest.repositories.ModuloRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +42,8 @@ public class ModuloRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @GetMapping("/")
-    public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
+    public ResponseEntity<List<ModuloDTO>> findAll(@RequestParam(required = false, name = "limit") Optional<String> limit,
+                                                   @RequestParam(required = false, name = "nombre") Optional<String> nombre) {
         List<Modulo> modulos = null;
         try {
             if (nombre.isPresent()) {
@@ -70,7 +72,7 @@ public class ModuloRestController {
             @ApiResponse(code = 404, message = "Not Found", response = ModuloNotFoundException.class)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
+    public ResponseEntity<ModuloDTO> findById(@PathVariable Long id) {
         Modulo modulo = moduloRepository.findById(id).orElse(null);
         if (modulo == null) {
             throw new ModuloNotFoundException(id);
@@ -86,7 +88,7 @@ public class ModuloRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @PostMapping("/")
-    public ResponseEntity<?> save(@RequestBody CreateModuloDTO moduloDTO) {
+    public ResponseEntity<ModuloDTO> save(@RequestBody CreateModuloDTO moduloDTO) {
         try {
             Modulo modulo = moduloMapper.fromDTO(moduloDTO);
             checkModuloData(modulo);
@@ -94,7 +96,7 @@ public class ModuloRestController {
             return ResponseEntity.ok(moduloMapper.toDTO(moduloInsertado));
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new GeneralBadRequestException("Insertar", "Error al insertar el módulo. Campos incorrectos");
+            throw new GeneralBadRequestException("Insertar", "Error al insertar el módulo. Campos incorrectos" + e.getMessage());
         }
     }
 
@@ -106,19 +108,20 @@ public class ModuloRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Modulo modulo) {
+    public ResponseEntity<ModuloDTO> update(@PathVariable Long id, @RequestBody Modulo modulo) {
+        Modulo moduloActualizado = moduloRepository.findById(id).orElse(null);
+        if (moduloActualizado == null) {
+            throw new ModuloNotFoundException(id);
+        }
+        checkModuloData(modulo);
+        moduloActualizado.setNombre(modulo.getNombre());
+        moduloActualizado.setSiglas(modulo.getSiglas());
+        moduloActualizado = moduloRepository.save(moduloActualizado);
+
         try {
-            Modulo moduloActualizado = moduloRepository.findById(id).orElse(null);
-            if (moduloActualizado == null) {
-                throw new ModuloNotFoundException(id);
-            } else {
-                checkModuloData(modulo);
-                moduloActualizado.setNombre(modulo.getNombre());
-                moduloActualizado.setSiglas(modulo.getSiglas());
-                moduloActualizado = moduloRepository.save(moduloActualizado);
-                return ResponseEntity.ok(moduloMapper.toDTO(moduloActualizado));
-            }
-        } catch (ResponseStatusException e) {
+            moduloActualizado = moduloRepository.save(moduloActualizado);
+            return ResponseEntity.ok(moduloMapper.toDTO(moduloActualizado));
+        } catch (Exception e) {
             throw new GeneralBadRequestException("Actualizar", "Error al actualizar el módulo. Campos incorrectos");
         }
     }
@@ -131,16 +134,15 @@ public class ModuloRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<ModuloDTO> delete(@PathVariable Long id) {
+        Modulo modulo = moduloRepository.findById(id).orElse(null);
+        if (modulo == null) {
+            throw new ModuloNotFoundException(id);
+        }
         try {
-            Modulo modulo = moduloRepository.findById(id).orElse(null);
-            if (modulo == null) {
-                throw new ModuloNotFoundException(id);
-            } else {
-                moduloRepository.delete(modulo);
-                return ResponseEntity.ok(moduloMapper.toDTO(modulo));
-            }
-        } catch (ResponseStatusException e) {
+            moduloRepository.delete(modulo);
+            return ResponseEntity.ok(moduloMapper.toDTO(modulo));
+        } catch (Exception e) {
             throw new GeneralBadRequestException("Eliminar", "Error al borrar el curso");
         }
     }
@@ -155,10 +157,11 @@ public class ModuloRestController {
     }
 
     //Obtener todos los módulos, paginable
+    @Operation(summary = "Obtiene la lista de módulos existentes", description = "Obtiene la lista de módulos existentes")
     @ApiOperation(value = "Obtiene una lista de módulos", notes = "Obtiene una lista de módulos paginada, filtrada y ordenada")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = ListModuloPageDTO.class),
-            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+            @ApiResponse(code = 200, message = "OK: Lista de módulos", response = ListModuloPageDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request: Lista no encontrada", response = GeneralBadRequestException.class)
     })
     @GetMapping("/all")
     public ResponseEntity<?> listado(

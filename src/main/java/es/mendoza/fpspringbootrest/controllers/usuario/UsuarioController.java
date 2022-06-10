@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UsuarioController {
     private final UsuarioService usuarioService;
-    private final UsuarioMapper ususuarioMapper;
+    private final UsuarioMapper usuarioMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
 
@@ -41,7 +40,7 @@ public class UsuarioController {
     })
     @PostMapping("/")
     public GetUsuarioDTO nuevoUsuario(@RequestBody CreateUsuarioDTO newUser) {
-        return ususuarioMapper.toDTO(usuarioService.nuevoUsuario(newUser));
+        return usuarioMapper.toDTO(usuarioService.nuevoUsuario(newUser));
 
     }
 
@@ -53,7 +52,7 @@ public class UsuarioController {
     })
     @GetMapping("/me")
     public GetUsuarioDTO me(@AuthenticationPrincipal Usuario user) {
-        return ususuarioMapper.toDTO(user);
+        return usuarioMapper.toDTO(user);
     }
 
     @ApiOperation(value = "Autentica un usuario")

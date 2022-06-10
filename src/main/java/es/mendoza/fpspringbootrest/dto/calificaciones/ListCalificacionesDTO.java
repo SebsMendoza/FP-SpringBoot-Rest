@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ListCalificacionesDTO {
-    LocalDateTime consulta = LocalDateTime.now();
+    private final String consulta = LocalDateTime.now().toString();
     String project = "SpringBootDAM";
     String version = "1.0";
     List<CalificacionDTO> data;

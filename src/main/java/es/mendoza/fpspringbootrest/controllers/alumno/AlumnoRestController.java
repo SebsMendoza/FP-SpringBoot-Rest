@@ -15,6 +15,7 @@ import es.mendoza.fpspringbootrest.service.uploads.StorageService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,8 @@ public class AlumnoRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @GetMapping("/")
-    public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit, @RequestParam(name = "nombre") Optional<String> nombre) {
+    public ResponseEntity<List<AlumnoDTO>> findAll(@RequestParam(required = false, name = "limit") Optional<String> limit,
+                                                   @RequestParam(required = false, name = "nombre") Optional<String> nombre) {
         List<Alumno> alumnos = null;
         try {
             if (nombre.isPresent()) {
@@ -75,7 +77,7 @@ public class AlumnoRestController {
             @ApiResponse(code = 404, message = "Not Found", response = AlumnoNotFoundException.class)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
+    public ResponseEntity<AlumnoDTO> findById(@PathVariable Long id) {
         Alumno alumno = alumnoRepository.findById(id).orElse(null);
         if (alumno == null) {
             throw new AlumnoNotFoundException(id);
@@ -91,7 +93,7 @@ public class AlumnoRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @PostMapping("/")
-    public ResponseEntity<?> save(@RequestBody CreateAlumnoDTO alumnoDTO) {
+    public ResponseEntity<AlumnoDTO> save(@RequestBody CreateAlumnoDTO alumnoDTO) {
         try {
             Alumno alumno = alumnoMapper.fromDTO(alumnoDTO);
             checkAlumnoData(alumno);
@@ -99,7 +101,7 @@ public class AlumnoRestController {
             return ResponseEntity.ok(alumnoMapper.toDTO(alumnoInsertado));
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new GeneralBadRequestException("Insertar", "Error al insertar el alumno. Campos incorrectos");
+            throw new GeneralBadRequestException("Insertar", "Error al insertar el alumno. Campos incorrectos" + e.getMessage());
         }
     }
 
@@ -111,19 +113,19 @@ public class AlumnoRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Alumno alumno) {
+    public ResponseEntity<AlumnoDTO> update(@PathVariable Long id, @RequestBody Alumno alumno) {
+        Alumno alumnoActualizado = alumnoRepository.findById(id).orElse(null);
+        if (alumnoActualizado == null) {
+            throw new AlumnoNotFoundException(id);
+        }
+        checkAlumnoData(alumno);
+        alumnoActualizado.setNombre(alumno.getNombre());
+        alumnoActualizado.setCorreo(alumno.getCorreo());
+        alumnoActualizado = alumnoRepository.save(alumnoActualizado);
         try {
-            Alumno alumnoActualizado = alumnoRepository.findById(id).orElse(null);
-            if (alumnoActualizado == null) {
-                throw new AlumnoNotFoundException(id);
-            } else {
-                checkAlumnoData(alumno);
-                alumnoActualizado.setNombre(alumno.getNombre());
-                alumnoActualizado.setCorreo(alumno.getCorreo());
-                alumnoActualizado = alumnoRepository.save(alumnoActualizado);
-                return ResponseEntity.ok(alumnoMapper.toDTO(alumnoActualizado));
-            }
-        } catch (ResponseStatusException e) {
+            alumnoActualizado = alumnoRepository.save(alumnoActualizado);
+            return ResponseEntity.ok(alumnoMapper.toDTO(alumnoActualizado));
+        } catch (Exception e) {
             throw new GeneralBadRequestException("Actualizar", "Error al actualizar el alumno. CAmpos incorrectos");
         }
     }
@@ -136,22 +138,22 @@ public class AlumnoRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<AlumnoDTO> delete(@PathVariable Long id) {
+        Alumno alumno = alumnoRepository.findById(id).orElse(null);
+        if (alumno == null) {
+            throw new AlumnoNotFoundException(id);
+        }
         try {
-            Alumno alumno = alumnoRepository.findById(id).orElse(null);
-            if (alumno == null) {
-                throw new AlumnoNotFoundException(id);
-            } else {
-                alumnoRepository.delete(alumno);
-                return ResponseEntity.ok(alumnoMapper.toDTO(alumno));
-            }
-        } catch (ResponseStatusException e) {
+            alumnoRepository.delete(alumno);
+            return ResponseEntity.ok(alumnoMapper.toDTO(alumno));
+        } catch (Exception e) {
             throw new GeneralBadRequestException("Eliminar", "Error al borrar el alumno");
         }
     }
 
     /**
-     *Método para comprobar que los datos del alumno son correctos
+     * Método para comprobar que los datos del alumno son correctos
+     *
      * @param alumno Producto a comprobar
      *               - Nombre no puede estar vacío
      *               - Correo no puede estar vacío
@@ -172,16 +174,16 @@ public class AlumnoRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> nuevoAlumno(@RequestPart("alumno") CreateAlumnoDTO alumnoDTO, @RequestPart("file") MultipartFile file) {
-        String urlImagen = null;
+    public ResponseEntity<?> nuevoAlumno(@RequestPart("alumno") CreateAlumnoDTO alumnoDTO,
+                                         @RequestPart("file") MultipartFile file) {
+        Alumno alumno = alumnoMapper.fromDTO(alumnoDTO);
+        checkAlumnoData(alumno);
+        if (!file.isEmpty()) {
+            String imagen = storageService.store(file);
+            String urlImagen = storageService.getUrl(imagen);
+            alumno.setImagen(urlImagen);
+        }
         try {
-            Alumno alumno = alumnoMapper.fromDTO(alumnoDTO);
-            checkAlumnoData(alumno);
-            if (!file.isEmpty()) {
-                String imagen = storageService.store(file);
-                urlImagen = storageService.getUrl(imagen);
-                alumno.setImagen(urlImagen);
-            }
             Alumno alumnoInsertado = alumnoRepository.save(alumno);
             return ResponseEntity.ok(alumnoMapper.toDTO(alumnoInsertado));
         } catch (AlumnoNotFoundException e) {
@@ -190,10 +192,11 @@ public class AlumnoRestController {
     }
 
     //Obtener todos los alumnos, paginable
+    @Operation(summary = "Obtiene la lista de alumnos existentes", description = "Obtiene la lista de alumnos existentes")
     @ApiOperation(value = "Obtiene una lista de alumnos", notes = "Obtiene una lista de alumnos paginada, filtrada y ordenada")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = ListAlumnoPageDTO.class),
-            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+            @ApiResponse(code = 200, message = "OK: Lista de alumnos", response = ListAlumnoPageDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request: Lista no encontrada", response = GeneralBadRequestException.class)
     })
     @GetMapping("/all")
     public ResponseEntity<?> listado(

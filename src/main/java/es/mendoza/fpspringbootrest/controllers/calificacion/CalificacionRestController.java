@@ -14,6 +14,7 @@ import es.mendoza.fpspringbootrest.repositories.CalificacionRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,15 +37,15 @@ public class CalificacionRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @GetMapping("/")
-    public ResponseEntity<?> findAll(@RequestParam(name = "limit") Optional<String> limit) {
-        List<Calificacion> notas = null;
+    public ResponseEntity<List<CalificacionDTO>> findAll(@RequestParam(required = false, name = "limit") Optional<String> limit) {
+        List<Calificacion> calificaciones = null;
         try {
-            notas = calificacionRepository.findAll();
-            if (limit.isPresent() && !notas.isEmpty() && notas.size() > Integer.parseInt(limit.get())) {
-                return ResponseEntity.ok(calificacionMapper.toDTO(notas.subList(0, Integer.parseInt(limit.get()))));
+            calificaciones = calificacionRepository.findAll();
+            if (limit.isPresent() && !calificaciones.isEmpty() && calificaciones.size() > Integer.parseInt(limit.get())) {
+                return ResponseEntity.ok(calificacionMapper.toDTO(calificaciones.subList(0, Integer.parseInt(limit.get()))));
             } else {
-                if (!notas.isEmpty()) {
-                    return ResponseEntity.ok(calificacionMapper.toDTO(notas));
+                if (!calificaciones.isEmpty()) {
+                    return ResponseEntity.ok(calificacionMapper.toDTO(calificaciones));
                 } else {
                     throw new CalificacionesNotFoundException();
                 }
@@ -61,12 +62,12 @@ public class CalificacionRestController {
             @ApiResponse(code = 404, message = "Not Found", response = CalificacionNotFoundException.class)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
-        Calificacion nota = calificacionRepository.findById(id).orElse(null);
-        if (nota == null) {
+    public ResponseEntity<CalificacionDTO> findById(@PathVariable Long id) {
+        Calificacion calificacion = calificacionRepository.findById(id).orElse(null);
+        if (calificacion == null) {
             throw new CalificacionNotFoundException(id);
         } else {
-            return ResponseEntity.ok(calificacionMapper.toDTO(nota));
+            return ResponseEntity.ok(calificacionMapper.toDTO(calificacion));
         }
     }
 
@@ -77,7 +78,7 @@ public class CalificacionRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @PostMapping("/")
-    public ResponseEntity<?> save(@RequestBody CreateCalificacionDTO calificacionDTO) {
+    public ResponseEntity<CalificacionDTO> save(@RequestBody CreateCalificacionDTO calificacionDTO) {
         try {
             Calificacion calificacion = calificacionMapper.fromDTO(calificacionDTO);
             checkCalificacionData(calificacion);
@@ -85,7 +86,7 @@ public class CalificacionRestController {
             return ResponseEntity.ok(calificacionMapper.toDTO(notaInsertada));
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new GeneralBadRequestException("Insertar", "Error al insertar la calificación");
+            throw new GeneralBadRequestException("Insertar", "Error al insertar la calificación" + e.getMessage());
         }
     }
 
@@ -97,17 +98,17 @@ public class CalificacionRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Calificacion calificacion) {
+    public ResponseEntity<CalificacionDTO> update(@PathVariable Long id, @RequestBody Calificacion calificacion) {
+        Calificacion notaActualizada = calificacionRepository.findById(id).orElse(null);
+        if (notaActualizada == null) {
+            throw new CalificacionNotFoundException(id);
+        }
+        checkCalificacionData(calificacion);
+        notaActualizada.setNota(calificacion.getNota());
+        notaActualizada = calificacionRepository.save(notaActualizada);
         try {
-            Calificacion notaActualizada = calificacionRepository.findById(id).orElse(null);
-            if (notaActualizada == null) {
-                throw new CalificacionNotFoundException(id);
-            } else {
-                checkCalificacionData(calificacion);
-                notaActualizada.setNota(calificacion.getNota());
-                notaActualizada = calificacionRepository.save(notaActualizada);
-                return ResponseEntity.ok(calificacionMapper.toDTO(notaActualizada));
-            }
+            notaActualizada = calificacionRepository.save(notaActualizada);
+            return ResponseEntity.ok(calificacionMapper.toDTO(notaActualizada));
         } catch (Exception e) {
             throw new GeneralBadRequestException("Actualizar", "Error al actualizar la calificación. Campos incorrectos");
         }
@@ -121,15 +122,14 @@ public class CalificacionRestController {
             @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<CalificacionDTO> delete(@PathVariable Long id) {
+        Calificacion calificacion = calificacionRepository.findById(id).orElse(null);
+        if (calificacion == null) {
+            throw new CalificacionNotFoundException(id);
+        }
         try {
-            Calificacion nota = calificacionRepository.findById(id).orElse(null);
-            if (nota == null) {
-                throw new CalificacionNotFoundException(id);
-            } else {
-                calificacionRepository.delete(nota);
-                return ResponseEntity.ok(calificacionMapper.toDTO(nota));
-            }
+            calificacionRepository.delete(calificacion);
+            return ResponseEntity.ok(calificacionMapper.toDTO(calificacion));
         } catch (Exception e) {
             throw new GeneralBadRequestException("Eliminar", "Error al borrar la calificación");
         }
@@ -141,18 +141,19 @@ public class CalificacionRestController {
         }
     }
 
+    @Operation(summary = "Obtiene la lista de calificaciones existentes", description = "Obtiene la lista de calificaciones existentes")
     @ApiOperation(value = "Obtiene una lista de calificaciones", notes = "Obtiene una lista de calificaciones paginada, filtrada y ordenada")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = ListCalificacionPageDTO.class),
-            @ApiResponse(code = 400, message = "Bad Request", response = GeneralBadRequestException.class)
+            @ApiResponse(code = 200, message = "OK: Lista de calificaciones", response = ListCalificacionPageDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request: Lista no encontrada", response = GeneralBadRequestException.class)
     })
     @GetMapping("/all")
     public ResponseEntity<?> listado() {
-        List<Calificacion> notas = calificacionRepository.findAll();
-        if (notas.isEmpty()) {
+        List<Calificacion> calificacion = calificacionRepository.findAll();
+        if (calificacion.isEmpty()) {
             throw new CalificacionesNotFoundException();
         } else {
-            return ResponseEntity.ok(calificacionMapper.toListDTO(notas));
+            return ResponseEntity.ok(calificacionMapper.toListDTO(calificacion));
         }
     }
 }

@@ -27,7 +27,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         Map<HttpStatus, String> error = Map.of(HttpStatus.UNAUTHORIZED, authException.getMessage());
         String strApiError = mapper.writeValueAsString(error);
 
-        // Lo devolvemos
         PrintWriter writer = response.getWriter();
         writer.println(strApiError);
 

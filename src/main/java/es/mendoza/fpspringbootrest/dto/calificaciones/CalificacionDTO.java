@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class CalificacionDTO {
     private Long id;
-    @NotBlank(message = "El nombre no puede estar vacío")
+    @NotBlank(message = "La nota no puede estar vacía")
     private double nota;
     private Alumno alumno;
     private Modulo modulo;

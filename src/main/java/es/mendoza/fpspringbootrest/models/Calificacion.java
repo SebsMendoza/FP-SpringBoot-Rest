@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -18,13 +19,13 @@ public class Calificacion {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotNull(message = "Nota no puede ser nula")
+    @NotBlank(message = "Nota no puede estar vacía")
     private Double nota;
     @ManyToOne
-    @JoinColumn(name = "id_alumno", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_alumno", referencedColumnName = "id")
     private Alumno alumno;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_modulo", referencedColumnName = "id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_modulo", referencedColumnName = "id")
     private Modulo modulo;
 
     public Long getId() {
@@ -43,7 +44,7 @@ public class Calificacion {
         this.nota = nota;
     }
 
-    @JsonBackReference
+    @JsonBackReference("alumno-nota")
     public Alumno getAlumno() {
         return alumno;
     }
@@ -52,7 +53,7 @@ public class Calificacion {
         this.alumno = alumno;
     }
 
-    @JsonBackReference
+    @JsonBackReference(value = "modulo-nota")
     public Modulo getModulo() {
         return modulo;
     }
