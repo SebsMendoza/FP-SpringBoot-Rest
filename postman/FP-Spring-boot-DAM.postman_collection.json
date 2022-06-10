@@ -1,0 +1,973 @@
+{
+	"info": {
+		"_postman_id": "9648a153-58f3-482e-b143-5d6f9508114c",
+		"name": "FP-Spring-boot-DAM",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19419657"
+	},
+	"item": [
+		{
+			"name": "FP",
+			"item": [
+				{
+					"name": "Cursos",
+					"item": [
+						{
+							"name": "GET BY ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/curso/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"curso",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/curso/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"curso",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL LIMIT",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/curso/?limit=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"curso",
+										""
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL NAME",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/curso/?nombre=web",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"curso",
+										""
+									],
+									"query": [
+										{
+											"key": "nombre",
+											"value": "web"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nombre\": \"Peluqueria e Imagen\",\r\n    \"siglas\": \"PEI\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/curso/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"curso",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nombre\": \"Nuevo nombre\",\r\n  \"siglas\": \"NN\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/curso/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"curso",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE (No permitido borrar)",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/curso/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"curso",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL one DTO",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/curso/all?sort=nombre",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"curso",
+										"all"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "nombre"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Alumnos",
+					"item": [
+						{
+							"name": "POST CREATE with Image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "alumno",
+											"type": "file",
+											"src": "NuevoAlumno.json"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "foto.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/create",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET BY ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/17",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										"17"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL LIMIT",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/?limit=3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										""
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL NAME",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/?nombre=s",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										""
+									],
+									"query": [
+										{
+											"key": "nombre",
+											"value": "s"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nombre\": \"Emilio\",\r\n    \"correo\": \"emil@prueba.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nombre\": \"Carlos\",\r\n    \"correo\": \"car@prueba.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/21",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										"21"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nombre\": \"Carlos\",\r\n    \"correo\": \"car@prueba.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/21",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										"21"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL one DTO",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nombre\": \"Carlos\",\r\n    \"correo\": \"car@prueba.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/alumno/all?sort=nombre&size=3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"alumno",
+										"all"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "nombre"
+										},
+										{
+											"key": "size",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Módulos",
+					"item": [
+						{
+							"name": "GET ALL",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/modulo/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"modulo",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET BY ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/modulo/5",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"modulo",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL LIMIT",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/modulo/?limit=3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"modulo",
+										""
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL NAME",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/modulo/?nombre=sistemas",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"modulo",
+										""
+									],
+									"query": [
+										{
+											"key": "nombre",
+											"value": "sistemas"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nombre\": \"Módulo nuevo\",\r\n    \"siglas\": \"MN\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/modulo/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"modulo",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nombre\": \"DataBase\",\r\n    \"siglas\": \"DB\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/modulo/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"modulo",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE (No permitido borrar)",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/modulo/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"modulo",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL one DTO",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/modulo/all?sort=nombre&page=2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"modulo",
+										"all"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "nombre"
+										},
+										{
+											"key": "page",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Calificaciones",
+					"item": [
+						{
+							"name": "GET ALL",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/calificacion/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"calificacion",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET BY ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/calificacion/22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"calificacion",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL LIMIT",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/calificacion/?limit=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"calificacion",
+										""
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nota\": 8.4\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/calificacion/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"calificacion",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nota\": 6.5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7575/rest/calificacion/35",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"calificacion",
+										"35"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/calificacion/27",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"calificacion",
+										"27"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET ALL one DTO",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7575/rest/calificacion/all",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7575",
+									"path": [
+										"rest",
+										"calificacion",
+										"all"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Uploads",
+			"item": [
+				{
+					"name": "GET File",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7575/rest/files/1654875383585_foto.jpg",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"files",
+								"1654875383585_foto.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST File",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "foto.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:7575/rest/files",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"files"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
