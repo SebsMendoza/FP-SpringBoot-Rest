@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 @Log
 @Component
 @RequiredArgsConstructor
@@ -25,8 +26,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // Comprueba la autorización a través del token
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         try {
             // Sacamos el token
@@ -38,8 +38,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 // Lo buscamos
                 Usuario user = (Usuario) userDetailsService.loadUserById(userId);
                 // Obtenemos la auteticación encapsulada del token: usuario, roles, y las autorizaciones.
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
-                        user.getRoles(), user.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, user.getRoles(), user.getAuthorities());
                 // le vamos a pasar información detro del contexto: dirección remota, session ID, etc.
                 authentication.setDetails(new WebAuthenticationDetails(request));
                 // Guardamos este objeto autetificación en elcontexto de seguridad.

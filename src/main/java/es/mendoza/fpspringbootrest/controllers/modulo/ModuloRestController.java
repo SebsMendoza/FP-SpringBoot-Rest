@@ -89,9 +89,9 @@ public class ModuloRestController {
     })
     @PostMapping("/")
     public ResponseEntity<ModuloDTO> save(@RequestBody CreateModuloDTO moduloDTO) {
+        Modulo modulo = moduloMapper.fromDTO(moduloDTO);
+        checkModuloData(modulo);
         try {
-            Modulo modulo = moduloMapper.fromDTO(moduloDTO);
-            checkModuloData(modulo);
             Modulo moduloInsertado = moduloRepository.save(modulo);
             return ResponseEntity.ok(moduloMapper.toDTO(moduloInsertado));
         } catch (Exception e) {
@@ -116,7 +116,6 @@ public class ModuloRestController {
         checkModuloData(modulo);
         moduloActualizado.setNombre(modulo.getNombre());
         moduloActualizado.setSiglas(modulo.getSiglas());
-        moduloActualizado = moduloRepository.save(moduloActualizado);
 
         try {
             moduloActualizado = moduloRepository.save(moduloActualizado);

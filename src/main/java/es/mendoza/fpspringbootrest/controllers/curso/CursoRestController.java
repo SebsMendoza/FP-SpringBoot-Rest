@@ -90,9 +90,9 @@ public class CursoRestController {
     })
     @PostMapping("/")
     public ResponseEntity<CursoDTO> save(@RequestBody CreateCursoDTO cursoDTO) {
+        Curso curso = cursoMapper.fromDTO(cursoDTO);
+        checkCursoData(curso);
         try {
-            Curso curso = cursoMapper.fromDTO(cursoDTO);
-            checkCursoData(curso);
             Curso cursoInsertado = cursoRepository.save(curso);
             return ResponseEntity.ok(cursoMapper.toDTO(cursoInsertado));
         } catch (Exception e) {

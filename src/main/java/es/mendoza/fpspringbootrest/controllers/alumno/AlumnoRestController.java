@@ -94,9 +94,10 @@ public class AlumnoRestController {
     })
     @PostMapping("/")
     public ResponseEntity<AlumnoDTO> save(@RequestBody CreateAlumnoDTO alumnoDTO) {
+
+        Alumno alumno = alumnoMapper.fromDTO(alumnoDTO);
+        checkAlumnoData(alumno);
         try {
-            Alumno alumno = alumnoMapper.fromDTO(alumnoDTO);
-            checkAlumnoData(alumno);
             Alumno alumnoInsertado = alumnoRepository.save(alumno);
             return ResponseEntity.ok(alumnoMapper.toDTO(alumnoInsertado));
         } catch (Exception e) {
@@ -121,7 +122,6 @@ public class AlumnoRestController {
         checkAlumnoData(alumno);
         alumnoActualizado.setNombre(alumno.getNombre());
         alumnoActualizado.setCorreo(alumno.getCorreo());
-        alumnoActualizado = alumnoRepository.save(alumnoActualizado);
         try {
             alumnoActualizado = alumnoRepository.save(alumnoActualizado);
             return ResponseEntity.ok(alumnoMapper.toDTO(alumnoActualizado));

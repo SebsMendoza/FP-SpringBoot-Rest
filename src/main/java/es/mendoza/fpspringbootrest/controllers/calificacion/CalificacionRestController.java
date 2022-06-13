@@ -79,9 +79,10 @@ public class CalificacionRestController {
     })
     @PostMapping("/")
     public ResponseEntity<CalificacionDTO> save(@RequestBody CreateCalificacionDTO calificacionDTO) {
+
+        Calificacion calificacion = calificacionMapper.fromDTO(calificacionDTO);
+        checkCalificacionData(calificacion);
         try {
-            Calificacion calificacion = calificacionMapper.fromDTO(calificacionDTO);
-            checkCalificacionData(calificacion);
             Calificacion notaInsertada = calificacionRepository.save(calificacion);
             return ResponseEntity.ok(calificacionMapper.toDTO(notaInsertada));
         } catch (Exception e) {
@@ -105,7 +106,6 @@ public class CalificacionRestController {
         }
         checkCalificacionData(calificacion);
         notaActualizada.setNota(calificacion.getNota());
-        notaActualizada = calificacionRepository.save(notaActualizada);
         try {
             notaActualizada = calificacionRepository.save(notaActualizada);
             return ResponseEntity.ok(calificacionMapper.toDTO(notaActualizada));

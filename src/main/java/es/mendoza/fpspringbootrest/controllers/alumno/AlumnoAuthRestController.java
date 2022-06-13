@@ -159,7 +159,8 @@ public class AlumnoAuthRestController {
     }
 
     /**
-     *Método para comprobar que los datos del alumno son correctos
+     * Método para comprobar que los datos del alumno son correctos
+     *
      * @param alumno Producto a comprobar
      *               - Nombre no puede estar vacío
      *               - Correo no puede estar vacío
