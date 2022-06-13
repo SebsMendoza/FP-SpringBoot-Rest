@@ -25,7 +25,7 @@ import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(APIConfig.API_PATH + "/usuarios")
+@RequestMapping(APIConfig.API_PATH + "/auth/usuarios")
 @RequiredArgsConstructor
 public class UsuarioController {
     private final UsuarioService usuarioService;

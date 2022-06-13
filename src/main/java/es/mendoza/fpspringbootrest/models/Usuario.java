@@ -55,33 +55,41 @@ public class Usuario implements UserDetails {
         return roles.stream().map(ur -> new SimpleGrantedAuthority("ROLE_" + ur.name())).collect(Collectors.toList());
     }
 
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
-    }
-
+    /**
+     * No vamos a gestionar la expiración de cuentas. De hacerse, se tendría que dar
+     * cuerpo a este método
+     */
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
+    /**
+     * No vamos a gestionar el bloqueo de cuentas. De hacerse, se tendría que dar
+     * cuerpo a este método
+     */
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
+
+    /**
+     * No vamos a gestionar la expiración de cuentas. De hacerse, se tendría que dar
+     * cuerpo a este método
+     */
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
+
+    /**
+     * No vamos a gestionar el bloqueo de cuentas. De hacerse, se tendría que dar
+     * cuerpo a este método
+     */
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

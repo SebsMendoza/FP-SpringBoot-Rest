@@ -20,7 +20,8 @@ public class JwtTokenProvider {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String TOKEN_TYPE = "JWT";
 
-    @Value("${jwt.secret:EnUnLugarDeLaManchaDeCuyoNombreNoQuieroAcordarmeNoHaMuchoTiempoQueViviaUnHidalgo}")
+    //@Value("${jwt.secret:EnUnLugarDeLaManchaDeCuyoNombreNoQuieroAcordarmeNoHaMuchoTiempoQueViviaUnHidalgo}")
+    @Value("${jwt.secret:MiCodigoSecretoParaValidarAlUsuarioYAlAdministradorDelCursoFPYPoderHacerLosTestConTranquilidad}")
     private String jwtSecreto;
     @Value("${jwt.token-expiration:86400}")
     private int jwtDuracionTokenEnSegundos;
