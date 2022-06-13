@@ -960,10 +960,311 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "New Request",
+					"name": "POST Login (Admin)",
 					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"Admin1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/usuarios/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"usuarios",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjU1MTIwNjE0LCJleHAiOjE2NTUyMDcwMTQsImZ1bGxuYW1lIjoiQWRtaW4gYWRtaW4iLCJyb2xlcyI6IkFETUlOLCBVU0VSIn0.wFvSkNJh610dkW7WbLb3yqF07vTV1n7wKwc9lhxDqPJTJdA7j0_nSNk-nTGGn2dQE1FIkAYwVw3w0_eLCBKiBw",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/usuarios/me",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"usuarios",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Login (User)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"marialopez\",\r\n    \"password\": \"Marialopez1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/usuarios/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"usuarios",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"prueba\",\r\n    \"avatar\": \"https://api.lorem.space/image/face?w=150&h=150\",\r\n    \"fullname\": \"Usuario de Prueba\",\r\n    \"email\": \"usuario@prueba.es\",\r\n    \"password\": \"123456789\",\r\n    \"password2\": \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/usuarios/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"usuarios",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FP Auth",
+			"item": [
+				{
+					"name": "GET (Only USER)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNjU1MTIyNjU1LCJleHAiOjE2NTUyMDkwNTUsImZ1bGxuYW1lIjoiTWFyw61hIEzDs3BleiIsInJvbGVzIjoiVVNFUiJ9.BZLhvYXeNasViZb876Am-bxr5GTbeDJGKs8N2TFvseXu1XuOThMbBPNwmd6jOU5pig33dGK9eeRxL-kOFQjnzQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/curso/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"curso",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL (ALL Users)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjU1MTIwNjE0LCJleHAiOjE2NTUyMDcwMTQsImZ1bGxuYW1lIjoiQWRtaW4gYWRtaW4iLCJyb2xlcyI6IkFETUlOLCBVU0VSIn0.wFvSkNJh610dkW7WbLb3yqF07vTV1n7wKwc9lhxDqPJTJdA7j0_nSNk-nTGGn2dQE1FIkAYwVw3w0_eLCBKiBw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/curso/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"curso",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL One DTO (ALL Users)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjU1MTIwNjE0LCJleHAiOjE2NTUyMDcwMTQsImZ1bGxuYW1lIjoiQWRtaW4gYWRtaW4iLCJyb2xlcyI6IkFETUlOLCBVU0VSIn0.wFvSkNJh610dkW7WbLb3yqF07vTV1n7wKwc9lhxDqPJTJdA7j0_nSNk-nTGGn2dQE1FIkAYwVw3w0_eLCBKiBw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/curso/all?page=1&size=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"curso",
+								"all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST (Only Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjU1MTIwNjE0LCJleHAiOjE2NTUyMDcwMTQsImZ1bGxuYW1lIjoiQWRtaW4gYWRtaW4iLCJyb2xlcyI6IkFETUlOLCBVU0VSIn0.wFvSkNJh610dkW7WbLb3yqF07vTV1n7wKwc9lhxDqPJTJdA7j0_nSNk-nTGGn2dQE1FIkAYwVw3w0_eLCBKiBw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Curso Prueba\",\r\n    \"siglas\": \"CP\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/curso/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"curso",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE (Only Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjU1MTIwNjE0LCJleHAiOjE2NTUyMDcwMTQsImZ1bGxuYW1lIjoiQWRtaW4gYWRtaW4iLCJyb2xlcyI6IkFETUlOLCBVU0VSIn0.wFvSkNJh610dkW7WbLb3yqF07vTV1n7wKwc9lhxDqPJTJdA7j0_nSNk-nTGGn2dQE1FIkAYwVw3w0_eLCBKiBw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7575/rest/auth/curso/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7575",
+							"path": [
+								"rest",
+								"auth",
+								"curso",
+								"2"
+							]
+						}
 					},
 					"response": []
 				}

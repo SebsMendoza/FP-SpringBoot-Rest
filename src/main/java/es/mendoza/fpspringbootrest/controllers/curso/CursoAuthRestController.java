@@ -34,8 +34,6 @@ public class CursoAuthRestController {
     private final CursoRepository cursoRepository;
     private final CursoMapper cursoMapper;
 
-    @CrossOrigin(origins = "http://localhost:7575")
-
     //Obtenemos todos los cursos
     @ApiOperation(value = "Obtener todos los cursos", notes = "Obtiene todos los cursos")
     @ApiResponses(value = {
