@@ -1,6 +1,7 @@
 package es.mendoza.fpspringbootrest.controllers.calificacion;
 
 import es.mendoza.fpspringbootrest.config.APIConfig;
+import es.mendoza.fpspringbootrest.dto.calificaciones.CalificacionAlumnoModuloDTO;
 import es.mendoza.fpspringbootrest.dto.calificaciones.CalificacionDTO;
 import es.mendoza.fpspringbootrest.dto.calificaciones.CreateCalificacionDTO;
 import es.mendoza.fpspringbootrest.dto.calificaciones.ListCalificacionPageDTO;
@@ -19,7 +20,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -54,6 +57,47 @@ public class CalificacionRestController {
             throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
         }
     }
+    /*
+      -> Ester sería el findAll con el nuevo DTO
+    @GetMapping("/")
+    public ResponseEntity<List<CalificacionAlumnoModuloDTO>> findAll(@RequestParam(required = false, name = "limit") Optional<String> limit) {
+        List<Calificacion> calificaciones = null;
+        try {
+            calificaciones = calificacionRepository.findAll();
+            if (limit.isPresent() && !calificaciones.isEmpty() && calificaciones.size() > Integer.parseInt(limit.get())) {
+                // calificacionMapper.toDTO(calificaciones.subList(0, Integer.parseInt(limit.get())));
+                List<Calificacion> nuevaLista = calificaciones.subList(0, Integer.parseInt(limit.get()));
+                return getAlumnoNotaModulo(nuevaLista);
+            } else {
+                if (!calificaciones.isEmpty()) {
+                    return getAlumnoNotaModulo(calificaciones);
+                    *//*
+                    return ResponseEntity.ok(calificacionMapper.toDTO(calificaciones));
+                     *//*
+                } else {
+                    throw new CalificacionesNotFoundException();
+                }
+            }
+        } catch (Exception e) {
+            throw new GeneralBadRequestException("Selección de datos", "Parámetros de consulta incorrectos");
+        }
+    }
+      ->Este método arregla la salida de calificaciones eliminando la recursividad utilizando un nuevo DTO,
+        pero estropea los test ya hechos. Cuando haya más tiempo, se cambiará
+
+    private ResponseEntity<List<CalificacionAlumnoModuloDTO>> getAlumnoNotaModulo(List<Calificacion> list) {
+        ArrayList<CalificacionAlumnoModuloDTO> result = new ArrayList<>();
+        for (Calificacion c : list) {
+            CalificacionAlumnoModuloDTO anmDTO = CalificacionAlumnoModuloDTO.builder()
+                    .id(c.getId())
+                    .calificacion(Map.of(c.getModulo().getNombre(), c.getNota()))
+                    .nombre(c.getAlumno().getNombre())
+                    .email(c.getAlumno().getCorreo())
+                    .build();
+            result.add(anmDTO);
+        }
+        return ResponseEntity.ok(result);
+    }*/
 
     //Obtener nota por id
     @ApiOperation(value = "Obtener una calificacion por id", notes = "Obtiene una calificacion por id")
